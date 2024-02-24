@@ -1,1 +1,44 @@
 GET http://localhost:3000
+
+###
+
+GET http://localhost:3000/user/sign-up
+
+###
+
+POST http://localhost:3000/user/sign-up
+Content-Type: application/json
+
+{
+    "first_name": "Josue",
+	"last_name": "De los santos",
+	"username": "josuesito",
+	"password": "admin123",
+    "passwordConfirmation": "admin124"
+}
+
+###
+
+POST http://localhost:3000/user/log-in
+Content-Type: application/json
+
+{
+	"username": "josuesito",
+	"password": "admin123"
+}
+
+###
+
+POST http://localhost:3000/user/create-post
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRhNzA0ZTE0NDQwYTA2MDI1M2IxNTgiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRXZTFTUUlPUWJBaHk5RFVydW1rekwuT0tsbFVhVHM4cDhsRDJKQ0JLdDBCR0NrQU92SDVGMiIsIl9fdiI6MCwiaWF0IjoxNzA4ODE0NTg1LCJleHAiOjE3MDg4MTgxODV9.jvSBW_nj28wzwtJjk9ktWHwMExWsSviGRYLdQDaWr8s
+
+{
+	"title": "example title",
+	"post": "example post"
+}
+
+###
+
+GET http://localhost:3000/user/post-list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRhNzA0ZTE0NDQwYTA2MDI1M2IxNTgiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRXZTFTUUlPUWJBaHk5RFVydW1rekwuT0tsbFVhVHM4cDhsRDJKQ0JLdDBCR0NrQU92SDVGMiIsIl9fdiI6MCwiaWF0IjoxNzA4ODE0NTg1LCJleHAiOjE3MDg4MTgxODV9.jvSBW_nj28wzwtJjk9ktWHwMExWsSviGRYLdQDaWr8s
