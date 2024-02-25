@@ -46,6 +46,16 @@ exports.comment_post = [
 ];
 // Delete specific comments
 exports.delete_comment = asyncHandler(async (req, res, next) => {
+	// Find comment
+	const comment = await Comment.findById(req.params.id);
+	// Find post where it belongs
+	const post = await Post.findById(comment.post);
+	// Update post
+	post.comments = post.comments.filter(
+		(param) => param != req.params.id
+	);
+	await Post.findByIdAndUpdate(post._id, post, {});
+	// Delete comment
 	await Comment.findByIdAndDelete(req.params.id);
 	res.sendStatus(200); //OK
 });
