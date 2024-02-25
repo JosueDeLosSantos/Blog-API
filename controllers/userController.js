@@ -144,6 +144,11 @@ exports.post_creator_post = [
 		.isLength({ min: 1 })
 		.escape()
 		.withMessage('Post must be specified.'),
+	body('author')
+		.trim()
+		.isLength({ min: 2 })
+		.escape()
+		.withMessage('Title must be specified.'),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -152,7 +157,7 @@ exports.post_creator_post = [
 			title: req.body.title,
 			post: req.body.post,
 			date: new Date(),
-			author: req.user._id,
+			author: req.body.author,
 			comments: [],
 		});
 		if (!errors.isEmpty()) {
