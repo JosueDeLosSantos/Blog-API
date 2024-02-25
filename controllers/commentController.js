@@ -19,12 +19,12 @@ exports.comment_post = [
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request
 		const errors = validationResult(req);
-		// Post comments on posts
+
 		const comment = new Comment({
 			email: req.body.email,
 			comment: req.body.comment,
 			date: new Date(),
-			post: req.body.post,
+			post: req.body.post, // Blog post were comment will be added
 		});
 		if (!errors.isEmpty()) {
 			// There are errors, return wrong typed data and errors
@@ -35,14 +35,17 @@ exports.comment_post = [
 		} else {
 			// save comment in database
 			const savedComment = await comment.save();
+			// Add comment to the corresponding post
+			const post = await Post.findById(comment.post);
+			post.comments.push(savedComment._id);
+			await Post.findByIdAndUpdate(post._id, post, {});
 
-			if (savedComment) {
-				// Update corresponding post
-				const post = await Post.findById(comment.post);
-				post.comments.push(savedComment._id);
-				await Post.findByIdAndUpdate(post._id, post, {});
-			}
-			res.json({ message: 'Comment saved' });
+			res.sendStatus(200); //OK
 		}
 	}),
 ];
+// Delete specific comments
+exports.delete_comment = asyncHandler(async (req, res, next) => {
+	await Comment.findByIdAndDelete(req.params.id);
+	res.sendStatus(200); //OK
+});

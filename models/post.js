@@ -8,7 +8,7 @@ const PostSchema = new Schema({
 	post: { type: String, required: true, minLength: 1 },
 	date: { type: Date, required: true },
 	author: { type: Schema.Types.ObjectId },
-	comments: [Schema.Types.ObjectId],
+	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 function removeAst(dateString) {

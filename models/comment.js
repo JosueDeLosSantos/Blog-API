@@ -7,7 +7,7 @@ const commentsSchema = new Schema({
 	email: { type: String, required: true, maxLength: 50 },
 	comment: { type: String, required: true, maxLength: 3000 },
 	date: { type: Date, required: true },
-	post: { type: Schema.Types.ObjectId },
+	post: { type: Schema.Types.ObjectId, ref: 'Post' },
 });
 
 function removeAst(dateString) {

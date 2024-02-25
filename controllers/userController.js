@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Post = require('../models/post');
+const Comment = require('../models/comment');
 
 exports.create_user_post = [
 	// Validate and sanitize fields.
@@ -68,7 +69,7 @@ exports.create_user_post = [
 			// store hashedPassword in Db
 			user.password = hashedPassword;
 			await user.save();
-			res.redirect('/user/log-in');
+			res.sendStatus(200); //OK
 		}
 	}),
 ];
@@ -123,20 +124,14 @@ exports.user_login_post = [
 			const accessToken = jwt.sign(
 				newUser,
 				`${process.env.ACCESS_TOKEN_SECRET}`,
-				{ expiresIn: '1h' }
+				{ expiresIn: '24h' }
 			);
 			res.json({ accessToken: accessToken });
-			res.redirect('/');
 		} else {
-			res.json({ message: 'user is not verified' });
-			res.redirect('/');
+			res.sendStatus(401); // Unauthorized
 		}
 	}),
 ];
-
-/* exports.post_creator_get = asyncHandler(async (req, res, next) => {
-
-}) */
 
 exports.post_creator_post = [
 	body('title')
@@ -170,17 +165,39 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
-			res.redirect('/user/post-list');
+			res.sendStatus(200); //OK
 		}
 	}),
 ];
 
 exports.posts_list = asyncHandler(async (req, res, next) => {
-	// Get details of posts
-	const posts = await Post.find().sort({ date: 1 });
+	// Display a list of all posts
+	const posts = await Post.find()
+		.sort({ date: 1 })
+		.populate('comments');
 	if (posts) {
 		res.json({ posts });
 	} else {
 		return res.sendStatus(503); // Service unavailable
 	}
+});
+
+// Delete specific posts
+exports.delete_post = asyncHandler(async (req, res, next) => {
+	// Find post
+	const post = await Post.findById(req.params.id);
+	if (post.comments.length) {
+		// Query all comments by their IDs
+		const promises = post.comments.map(async (comment) => {
+			return await Comment.findById(comment);
+		});
+		const store = await Promise.all(promises);
+		// Delete each comment by their IDs
+		for (const comment of store) {
+			await Comment.findByIdAndDelete(comment._id);
+		}
+	}
+	// Delete the post
+	await Post.findByIdAndDelete(req.params.id);
+	res.sendStatus(200); //OK
 });

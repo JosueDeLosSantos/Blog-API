@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const user_controller = require('../controllers/userController');
+const comment_controller = require('../controllers/commentController');
 
 /* The following middleware is executed on all protected routes
 	example:
@@ -49,26 +50,32 @@ function makeRequest(url, method) {
 
  */
 
-router.get('/sign-up', (req, res, next) => {
-	res.json({ message: 'sign up get request' });
-});
-
 router.post('/sign-up', user_controller.create_user_post);
 
 router.post('/log-in', user_controller.user_login_post);
-router.get('/log-in', authenticateToken, (req, res, next) => {
-	res.json({ message: 'Successfully signed in' });
-});
 
 router.post(
 	'/create-post',
 	authenticateToken,
 	user_controller.post_creator_post
 );
+
 router.get(
-	'/post-list',
+	'/posts',
 	authenticateToken,
 	user_controller.posts_list
+);
+
+router.delete(
+	'/posts/:id',
+	authenticateToken,
+	user_controller.delete_post
+);
+
+router.delete(
+	'/comments/:id',
+	authenticateToken,
+	comment_controller.delete_comment
 );
 
 module.exports = router;

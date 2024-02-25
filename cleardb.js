@@ -8,6 +8,7 @@ console.log(
 
 const User = require('./models/user');
 const Post = require('./models/post');
+const Comment = require('./models/comment');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -22,6 +23,7 @@ async function main() {
 	console.log('Debug: Should be connected?');
 	await clearUsers();
 	await clearPosts();
+	await clearComments();
 	console.log('Debug: Closing mongoose');
 	mongoose.connection.close();
 }
@@ -33,4 +35,8 @@ async function clearUsers() {
 async function clearPosts() {
 	await Post.deleteMany({});
 	console.log('deleted all posts');
+}
+async function clearComments() {
+	await Comment.deleteMany({});
+	console.log('deleted all comments');
 }
