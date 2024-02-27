@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { DateTime } = require('luxon');
+const mongoose = require("mongoose");
+const { DateTime } = require("luxon");
 
 const Schema = mongoose.Schema;
 
@@ -7,7 +7,7 @@ const commentsSchema = new Schema({
 	email: { type: String, required: true, maxLength: 50 },
 	comment: { type: String, required: true, maxLength: 3000 },
 	date: { type: Date, required: true },
-	post: { type: Schema.Types.ObjectId, ref: 'Post' },
+	post: { type: Schema.Types.ObjectId, ref: "Post" },
 });
 
 function removeAst(dateString) {
@@ -15,17 +15,17 @@ function removeAst(dateString) {
 	const pattern = /\bAST\b/gi;
 
 	// Replace occurrences of "AST" with an empty string
-	const cleanedDate = dateString.replace(pattern, '');
+	const cleanedDate = dateString.replace(pattern, "");
 
 	return cleanedDate;
 }
 
-commentsSchema.virtual('virtual_date').get(function () {
+commentsSchema.virtual("virtual_date").get(function () {
 	const notFormattedDate = DateTime.fromJSDate(this.date)
-		.setLocale('en')
+		.setLocale("en")
 		.toLocaleString(DateTime.DATETIME_FULL); // format: February 14, 2024 at 6:04 PM AST
 	const formattedDate = removeAst(notFormattedDate);
 	return formattedDate;
 });
 
-module.exports = mongoose.model('Comment', commentsSchema);
+module.exports = mongoose.model("Comment", commentsSchema);

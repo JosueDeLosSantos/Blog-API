@@ -1,48 +1,44 @@
-const asyncHandler = require('express-async-handler');
-const { body, validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const Post = require('../models/post');
-const Comment = require('../models/comment');
+const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const Post = require("../models/post");
+const Comment = require("../models/comment");
 
 exports.create_user_post = [
 	// Validate and sanitize fields.
-	body('first_name')
+	body("first_name")
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage('First name must be specified.')
+		.withMessage("First name must be specified.")
 		.isAlpha()
-		.withMessage('First name has non-alpha characters.'),
-	body('last_name')
+		.withMessage("First name has non-alpha characters."),
+	body("last_name")
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage('Last name must be specified.'),
-	body('username')
+		.withMessage("Last name must be specified."),
+	body("username")
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage('username must be specified.')
+		.withMessage("username must be specified.")
 		.isAlphanumeric()
-		.withMessage(
-			'username has non-alphanumeric characters.'
-		),
-	body('password')
+		.withMessage("username has non-alphanumeric characters."),
+	body("password")
 		.trim()
 		.isLength({ min: 6 })
 		.escape()
-		.withMessage('password must be specified.')
+		.withMessage("password must be specified.")
 		.isAlphanumeric()
-		.withMessage(
-			'Password has non-alphanumeric characters.'
-		),
-	body('passwordConfirmation')
+		.withMessage("Password has non-alphanumeric characters."),
+	body("passwordConfirmation")
 		.custom((value, { req }) => {
 			return value === req.body.password;
 		})
-		.withMessage('Passwords do not match'),
+		.withMessage("Passwords do not match"),
 	// Process request after validation and sanitization.
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
@@ -54,10 +50,7 @@ exports.create_user_post = [
 			username: req.body.username,
 			password: req.body.password,
 		});
-		const hashedPassword = await bcrypt.hash(
-			req.body.password,
-			10
-		);
+		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		if (!errors.isEmpty()) {
 			res.json({
 				user: user,
@@ -75,24 +68,20 @@ exports.create_user_post = [
 ];
 
 exports.user_login_post = [
-	body('username')
+	body("username")
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage('username must be specified.')
+		.withMessage("username must be specified.")
 		.isAlphanumeric()
-		.withMessage(
-			'username has non-alphanumeric characters.'
-		),
-	body('password')
+		.withMessage("username has non-alphanumeric characters."),
+	body("password")
 		.trim()
 		.isLength({ min: 6 })
 		.escape()
-		.withMessage('password must be specified.')
+		.withMessage("password must be specified.")
 		.isAlphanumeric()
-		.withMessage(
-			'Password has non-alphanumeric characters.'
-		),
+		.withMessage("Password has non-alphanumeric characters."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -114,18 +103,13 @@ exports.user_login_post = [
 		// Get user's hashed password
 		const passwordHash = newUser.password;
 		// Decode hashed password and authenticate passwords
-		const match = await bcrypt.compare(
-			req.body.password,
-			passwordHash
-		);
+		const match = await bcrypt.compare(req.body.password, passwordHash);
 
 		if (match) {
 			// If passwords match generate accessToken
-			const accessToken = jwt.sign(
-				newUser,
-				`${process.env.ACCESS_TOKEN_SECRET}`,
-				{ expiresIn: '24h' }
-			);
+			const accessToken = jwt.sign(newUser, `${process.env.ACCESS_TOKEN_SECRET}`, {
+				expiresIn: "24h",
+			});
 			res.json({ accessToken: accessToken });
 		} else {
 			res.sendStatus(401); // Unauthorized
@@ -134,21 +118,21 @@ exports.user_login_post = [
 ];
 
 exports.post_creator_post = [
-	body('title')
+	body("title")
 		.trim()
 		.isLength({ min: 1 })
 		.escape()
-		.withMessage('Title must be specified.'),
-	body('post')
+		.withMessage("Title must be specified."),
+	body("post")
 		.trim()
 		.isLength({ min: 1 })
 		.escape()
-		.withMessage('Post must be specified.'),
-	body('author')
+		.withMessage("Post must be specified."),
+	body("author")
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage('Title must be specified.'),
+		.withMessage("Title must be specified."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -177,10 +161,22 @@ exports.post_creator_post = [
 
 exports.posts_list = asyncHandler(async (req, res, next) => {
 	// Display a list of all posts
-	const posts = await Post.find()
-		.sort({ date: 1 })
-		.populate('comments');
-	if (posts) {
+	const posts = await Post.find().sort({ date: 1 }).populate("comments");
+	// Update posts dates to a more understandable date
+	posts.forEach((_, i) => {
+		posts[i] = { ...posts[i]._doc, date: posts[i].virtual_date };
+		if (posts[i].comments.length) {
+			// If posts contain any comments, update those comment's date
+			posts[i].comments.forEach((_, j) => {
+				posts[i].comments[j]._doc = {
+					...posts[i].comments[j]._doc,
+					date: posts[i].comments[j].virtual_date,
+				};
+			});
+		}
+	});
+
+	if (posts.length) {
 		res.json({ posts });
 	} else {
 		return res.sendStatus(503); // Service unavailable
