@@ -62,6 +62,7 @@ exports.user_sign_up = [
 			// store hashedPassword in Db
 			user.password = hashedPassword;
 			await user.save();
+			res.json({ message: "Successful sign up" });
 		}
 	})
 ];
@@ -131,7 +132,7 @@ exports.post_creator_post = [
 		.trim()
 		.isLength({ min: 2 })
 		.escape()
-		.withMessage("Title must be specified."),
+		.withMessage("Author must be specified."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -153,6 +154,7 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
+			res.json({ message: "Post created" });
 		}
 	})
 ];
@@ -200,4 +202,5 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	}
 	// Delete the post
 	await Post.findByIdAndDelete(req.params.id);
+	res.json({ message: "post deleted" });
 });

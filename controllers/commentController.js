@@ -40,6 +40,7 @@ exports.comment_post = [
 			const post = await Post.findById(comment.post);
 			post.comments.push(savedComment._id);
 			await Post.findByIdAndUpdate(post._id, post, {});
+			res.json({ message: "comment added" });
 		}
 	})
 ];
@@ -54,4 +55,5 @@ exports.delete_comment = asyncHandler(async (req, res, next) => {
 	await Post.findByIdAndUpdate(post._id, post, {});
 	// Delete comment
 	await Comment.findByIdAndDelete(req.params.id);
+	res.json({ message: "comment deleted" });
 });
