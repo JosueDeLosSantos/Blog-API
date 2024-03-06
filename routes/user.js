@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
+const cors = require("cors");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const user_controller = require('../controllers/userController');
-const comment_controller = require('../controllers/commentController');
+const jwt = require("jsonwebtoken");
+const user_controller = require("../controllers/userController");
+const comment_controller = require("../controllers/commentController");
 
 /* The following middleware is executed on all protected routes
 	example:
@@ -14,20 +15,16 @@ const comment_controller = require('../controllers/commentController');
 });
 */
 function authenticateToken(req, res, next) {
-	const authHeader = req.headers['authorization'];
+	const authHeader = req.headers["authorization"];
 
-	const token = authHeader && authHeader.split(' ')[1];
+	const token = authHeader && authHeader.split(" ")[1];
 	if (token == null) return res.sendStatus(401); // 'Unauthorized';
 
-	jwt.verify(
-		token,
-		process.env.ACCESS_TOKEN_SECRET,
-		(err, user) => {
-			if (err) return res.sendStatus(403); // 'Forbidden';
-			req.user = user;
-			next();
-		}
-	);
+	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+		if (err) return res.sendStatus(403); // 'Forbidden';
+		req.user = user;
+		next();
+	});
 }
 
 /* 
@@ -50,30 +47,20 @@ function makeRequest(url, method) {
 
  */
 
-router.post('/sign-up', user_controller.create_user_post);
-
-router.post('/log-in', user_controller.user_login_post);
-
-router.post(
-	'/create-post',
-	authenticateToken,
-	user_controller.post_creator_post
-);
-
-router.get(
-	'/posts',
-	authenticateToken,
-	user_controller.posts_list
-);
-
+// sign up new admin
+router.post("/sign-up", cors(), user_controller.user_sign_up);
+// log in after signing up
+router.post("/log-in", cors(), user_controller.user_login_post);
+// create new post
+router.post("/create-post", cors(), authenticateToken, user_controller.post_creator_post);
+// display all posts
+router.get("/posts", cors(), authenticateToken, user_controller.posts_list);
+// delete post
+router.delete("/posts/:id", cors(), authenticateToken, user_controller.delete_post);
+//delet comment
 router.delete(
-	'/posts/:id',
-	authenticateToken,
-	user_controller.delete_post
-);
-
-router.delete(
-	'/comments/:id',
+	"/comments/:id",
+	cors(),
 	authenticateToken,
 	comment_controller.delete_comment
 );

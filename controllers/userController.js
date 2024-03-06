@@ -6,7 +6,7 @@ const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 
-exports.create_user_post = [
+exports.user_sign_up = [
 	// Validate and sanitize fields.
 	body("first_name")
 		.trim()
@@ -56,13 +56,12 @@ exports.create_user_post = [
 				user: user,
 				errors: errors.array(),
 			});
-			return;
 		} else {
 			// Data from form is valid.
 			// store hashedPassword in Db
 			user.password = hashedPassword;
 			await user.save();
-			res.sendStatus(200); //OK
+			res.redirect("/user/log-in");
 		}
 	}),
 ];
@@ -154,7 +153,6 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
-			res.sendStatus(200); //OK
 		}
 	}),
 ];
@@ -162,11 +160,13 @@ exports.post_creator_post = [
 exports.posts_list = asyncHandler(async (req, res, next) => {
 	// Display a list of all posts
 	const posts = await Post.find().sort({ date: 1 }).populate("comments");
-	// Update posts dates to a more understandable date
+
 	posts.forEach((_, i) => {
+		// Update posts dates to a more understandable date
 		posts[i] = { ...posts[i]._doc, date: posts[i].virtual_date };
 		if (posts[i].comments.length) {
 			// If posts contain any comments, update those comment's date
+			// to a more understandable date
 			posts[i].comments.forEach((_, j) => {
 				posts[i].comments[j]._doc = {
 					...posts[i].comments[j]._doc,
@@ -179,7 +179,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 	if (posts.length) {
 		res.json({ posts });
 	} else {
-		return res.sendStatus(503); // Service unavailable
+		res.json({ message: "no posts" });
 	}
 });
 
@@ -200,5 +200,4 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	}
 	// Delete the post
 	await Post.findByIdAndDelete(req.params.id);
-	res.sendStatus(200); //OK
 });

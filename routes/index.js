@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const comment_controller = require("../controllers/commentController");
@@ -6,6 +7,7 @@ const Post = require("../models/post");
 
 router.get(
 	"/",
+	cors(),
 	asyncHandler(async (req, res, next) => {
 		// Display a list of all posts
 		const posts = await Post.find().sort({ date: 1 }).populate("comments");
@@ -31,6 +33,6 @@ router.get(
 	})
 );
 // Post comments on specific posts
-router.post("/", comment_controller.comment_post);
+router.post("/", cors(), comment_controller.comment_post);
 
 module.exports = router;
