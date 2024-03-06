@@ -56,6 +56,7 @@ exports.user_sign_up = [
 				user: user,
 				errors: errors.array(),
 			});
+			return;
 		} else {
 			// Data from form is valid.
 			// store hashedPassword in Db
