@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const user_controller = require("../controllers/userController");
@@ -48,21 +47,16 @@ function makeRequest(url, method) {
  */
 
 // sign up new admin
-router.post("/sign-up", cors(), user_controller.user_sign_up);
+router.post("/sign-up", user_controller.user_sign_up);
 // log in after signing up
-router.post("/log-in", cors(), user_controller.user_login_post);
+router.post("/log-in", user_controller.user_login_post);
 // create new post
-router.post("/create-post", cors(), authenticateToken, user_controller.post_creator_post);
+router.post("/create-post", authenticateToken, user_controller.post_creator_post);
 // display all posts
-router.get("/posts", cors(), authenticateToken, user_controller.posts_list);
+router.get("/posts", authenticateToken, user_controller.posts_list);
 // delete post
-router.delete("/posts/:id", cors(), authenticateToken, user_controller.delete_post);
+router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
 //delet comment
-router.delete(
-	"/comments/:id",
-	cors(),
-	authenticateToken,
-	comment_controller.delete_comment
-);
+router.delete("/comments/:id", authenticateToken, comment_controller.delete_comment);
 
 module.exports = router;

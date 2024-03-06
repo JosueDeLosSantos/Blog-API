@@ -7,7 +7,6 @@ const Post = require("../models/post");
 
 router.get(
 	"/",
-	cors(),
 	asyncHandler(async (req, res, next) => {
 		// Display a list of all posts
 		const posts = await Post.find().sort({ date: 1 }).populate("comments");
@@ -33,6 +32,6 @@ router.get(
 	})
 );
 // Post comments on specific posts
-router.post("/", cors(), comment_controller.comment_post);
+router.post("/", comment_controller.comment_post);
 
 module.exports = router;
