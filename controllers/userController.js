@@ -112,7 +112,7 @@ exports.user_login_post = [
 			});
 			res.json({ accessToken: accessToken });
 		} else {
-			res.sendStatus(401); // Unauthorized
+			res.json({ message: "Username or Password is incorrect" });
 		}
 	})
 ];
