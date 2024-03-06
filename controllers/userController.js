@@ -48,13 +48,13 @@ exports.user_sign_up = [
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			username: req.body.username,
-			password: req.body.password,
+			password: req.body.password
 		});
 		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		if (!errors.isEmpty()) {
 			res.json({
 				user: user,
-				errors: errors.array(),
+				errors: errors.array()
 			});
 			return;
 		} else {
@@ -62,9 +62,8 @@ exports.user_sign_up = [
 			// store hashedPassword in Db
 			user.password = hashedPassword;
 			await user.save();
-			res.redirect("/user/log-in");
 		}
-	}),
+	})
 ];
 
 exports.user_login_post = [
@@ -90,13 +89,13 @@ exports.user_login_post = [
 			res.json({
 				username: req.body.username,
 				password: req.body.password,
-				errors: errors.array(),
+				errors: errors.array()
 			});
 			return;
 		}
 
 		const user = await User.find({
-			username: req.body.username,
+			username: req.body.username
 		});
 		// Transform user into js object
 		const newUser = JSON.parse(JSON.stringify(user))[0];
@@ -108,13 +107,13 @@ exports.user_login_post = [
 		if (match) {
 			// If passwords match generate accessToken
 			const accessToken = jwt.sign(newUser, `${process.env.ACCESS_TOKEN_SECRET}`, {
-				expiresIn: "24h",
+				expiresIn: "24h"
 			});
 			res.json({ accessToken: accessToken });
 		} else {
 			res.sendStatus(401); // Unauthorized
 		}
-	}),
+	})
 ];
 
 exports.post_creator_post = [
@@ -142,12 +141,12 @@ exports.post_creator_post = [
 			post: req.body.post,
 			date: new Date(),
 			author: req.body.author,
-			comments: [],
+			comments: []
 		});
 		if (!errors.isEmpty()) {
 			res.json({
 				post: post,
-				errors: errors.array(),
+				errors: errors.array()
 			});
 			return;
 		} else {
@@ -155,7 +154,7 @@ exports.post_creator_post = [
 			// Save post in database
 			await post.save();
 		}
-	}),
+	})
 ];
 
 exports.posts_list = asyncHandler(async (req, res, next) => {
@@ -171,7 +170,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 			posts[i].comments.forEach((_, j) => {
 				posts[i].comments[j]._doc = {
 					...posts[i].comments[j]._doc,
-					date: posts[i].comments[j].virtual_date,
+					date: posts[i].comments[j].virtual_date
 				};
 			});
 		}
