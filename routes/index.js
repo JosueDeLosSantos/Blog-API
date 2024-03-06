@@ -28,7 +28,7 @@ router.get(
 		if (posts.length) {
 			res.json({ posts });
 		} else {
-			return res.sendStatus(503); // Service unavailable
+			res.json({ message: "no posts" }); // Service unavailable
 		}
 	})
 );
