@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const comment_controller = require("../controllers/commentController");
@@ -18,7 +17,7 @@ router.get(
 				posts[i].comments.forEach((_, j) => {
 					posts[i].comments[j]._doc = {
 						...posts[i].comments[j]._doc,
-						date: posts[i].comments[j].virtual_date,
+						date: posts[i].comments[j].virtual_date
 					};
 				});
 			}

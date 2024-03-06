@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 
 const indexRouter = require("./routes/index");
@@ -17,6 +18,13 @@ db.on("connected", console.log.bind(console, "connected to database"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+	cors({
+		origin: "*", // Replace with the origin(s) you want to allow
+		credentials: true // Enable cookies (optional)
+	})
+);
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
