@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer"); // enables file uploading
+const upload = multer({ dest: "./public/uploads/" }); // The folder to which the file has been saved
 const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
@@ -117,7 +119,13 @@ exports.user_login_post = [
 	})
 ];
 
+// Display Post create form on GET
+exports.post_creator_get = (req, res, next) => {
+	res.render("create-form");
+};
+
 exports.post_creator_post = [
+	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
 		.isLength({ min: 1 })
@@ -142,8 +150,17 @@ exports.post_creator_post = [
 			post: req.body.post,
 			date: new Date(),
 			author: req.body.author,
-			comments: []
+			comments: [],
+			file: req.file
+				? {
+						originalname: req.file.originalname,
+						mimetype: req.file.mimetype,
+						path: req.file.path,
+						size: req.file.size
+				  }
+				: null
 		});
+
 		if (!errors.isEmpty()) {
 			res.json({
 				post: post,

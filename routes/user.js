@@ -50,6 +50,9 @@ function makeRequest(url, method) {
 router.post("/sign-up", user_controller.user_sign_up);
 // log in after signing up
 router.post("/log-in", user_controller.user_login_post);
+
+// router.get("/create-post", user_controller.post_creator_get);
+
 // create new post
 router.post("/create-post", authenticateToken, user_controller.post_creator_post);
 // display all posts

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+//const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
@@ -15,6 +16,10 @@ mongoose.connect(mongoDb);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo conection error"));
 db.on("connected", console.log.bind(console, "connected to database"));
+
+// view engine setup
+// app.set("views", path.join(__dirname, "views"));
+// app.set("view engine", "ejs");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

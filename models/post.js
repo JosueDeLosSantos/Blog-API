@@ -3,12 +3,20 @@ const { DateTime } = require("luxon");
 
 const Schema = mongoose.Schema;
 
+const File = new Schema({
+	originalname: String,
+	mimetype: String,
+	path: String,
+	size: Number
+});
+
 const PostSchema = new Schema({
 	title: { type: String, required: true, minLength: 1 },
 	post: { type: String, required: true, minLength: 1 },
 	date: { type: Date, required: true },
 	author: { type: String, required: true, minLength: 2 },
 	comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+	file: File
 });
 
 function removeAst(dateString) {
