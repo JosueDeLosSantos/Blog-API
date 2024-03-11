@@ -8,6 +8,7 @@ const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 
+// post user sign up request
 exports.user_sign_up = [
 	// Validate and sanitize fields.
 	body("first_name")
@@ -28,7 +29,13 @@ exports.user_sign_up = [
 		.escape()
 		.withMessage("username must be specified.")
 		.isAlphanumeric()
-		.withMessage("username has non-alphanumeric characters."),
+		.withMessage("username has non-alphanumeric characters.")
+		.custom(async (value) => {
+			const user = await User.findOne({ username: `${value}` });
+			if (user) {
+				throw new Error("username already in use");
+			}
+		}),
 	body("password")
 		.trim()
 		.isLength({ min: 6 })
@@ -68,7 +75,7 @@ exports.user_sign_up = [
 		}
 	})
 ];
-
+// post login request
 exports.user_login_post = [
 	body("username")
 		.trim()
@@ -221,3 +228,93 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	await Post.findByIdAndDelete(req.params.id);
 	res.json({ message: "post deleted" });
 });
+
+// Display post to be updated
+exports.update_post_get = asyncHandler(async (req, res, next) => {
+	const post = await Post.findById(req.params.id);
+
+	if (post === null) {
+		// No results.
+		const err = new Error("Post not found");
+		err.status = 404;
+		return next(err);
+	}
+
+	res.json({ post });
+});
+
+// Update post
+exports.update_post = [
+	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
+	body("title")
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage("Title must be specified."),
+	body("post")
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage("Post must be specified."),
+	body("author")
+		.trim()
+		.isLength({ min: 2 })
+		.escape()
+		.withMessage("Author must be specified."),
+	asyncHandler(async (req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+		// Create Posts object with escaped and trimmed data
+		const post = new Post({
+			title: req.body.title,
+			post: req.body.post,
+			date: new Date(),
+			author: req.body.author,
+			comments: req.body.comments,
+			file: req.file
+				? {
+						originalname: req.file.originalname,
+						mimetype: req.file.mimetype,
+						path: req.file.path,
+						size: req.file.size
+				  }
+				: null
+		});
+
+		/* pending: add a function to clean multer trash after updating the post's file */
+
+		/* 
+			EXAMPLE:
+
+			const fs = require('fs');
+			const path = require('path');
+
+			// Assuming you have a function or route handler that identifies the file to delete
+			function deleteUploadedFile(filename) {
+			const filePath = path.join(__dirname, 'uploads/', filename); // Construct the path
+
+			fs.unlink(filePath, (err) => {
+				if (err) {
+				console.error(err);
+				// Handle the error appropriately (e.g., inform the user)
+				} else {
+				console.log(`File ${filename} deleted successfully.`);
+				}
+			});
+			}
+		*/
+
+		if (!errors.isEmpty()) {
+			res.json({
+				post: post,
+				errors: errors.array()
+			});
+			return;
+		} else {
+			// Data from form is valid.
+			// Save post in database
+			await Post.findByIdAndUpdate(req.params.id, post);
+			res.json({ message: "Post updated" });
+		}
+	})
+];

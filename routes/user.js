@@ -59,7 +59,9 @@ router.post("/create-post", authenticateToken, user_controller.post_creator_post
 router.get("/posts", authenticateToken, user_controller.posts_list);
 // delete post
 router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
-//delet comment
+// update post
+router.get("/posts/:id", authenticateToken, user_controller.update_post_get);
+//delete comment
 router.delete("/comments/:id", authenticateToken, comment_controller.delete_comment);
 
 module.exports = router;
