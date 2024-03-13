@@ -1,20 +1,16 @@
 GET http://localhost:3000
 
-###
-
-GET http://localhost:3000/user/sign-up
-
-###
+### see all posts on main page
 
 POST http://localhost:3000/user/sign-up
 Content-Type: application/json
 
 {
-    "first_name": "Josue",
-	"last_name": "De los santos",
-	"username": "josuesito",
+    "first_name": "jhon",
+	"last_name": "dow",
+	"username": "jhondow",
 	"password": "admin123",
-    "passwordConfirmation": "admin124"
+    "passwordConfirmation": "admin123"
 }
 
 ###
@@ -23,7 +19,7 @@ POST http://localhost:3000/user/log-in
 Content-Type: application/json
 
 {
-	"username": "josuesito",
+	"username": "jhondow",
 	"password": "admin123"
 }
 
@@ -31,17 +27,27 @@ Content-Type: application/json
 
 POST http://localhost:3000/user/create-post
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRhNzA0ZTE0NDQwYTA2MDI1M2IxNTgiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRXZTFTUUlPUWJBaHk5RFVydW1rekwuT0tsbFVhVHM4cDhsRDJKQ0JLdDBCR0NrQU92SDVGMiIsIl9fdiI6MCwiaWF0IjoxNzA4ODI0MzgwLCJleHAiOjE3MDg4Mjc5ODB9.wOgZS8B0SDe5WAXS_PhYEJK-9lATcIJ-metryKhRYeE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWVmMDU5OTQyMWFjZjU5ZTkwYmU1N2YiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJFNjWDVQSS9sb1NxVGhiYmJhVzJCRi5mci42cVFkOVA4MWtZOGtFR1h6R2o5cDIvRnRQSnVTIiwiX192IjowLCJpYXQiOjE3MTAxNjY0MDUsImV4cCI6MTcxMDI1MjgwNX0.h1h49G7A3a_30I8UtufUlZ3Xv56u2tYMC1gwrth8l4w
 
 {
-	"title": "example title",
-	"post": "example post"
+	"title": "1 example title",
+	"post": "1 example post",
+	"author": "Jhon Dow"
 }
 
 ###
 
-GET http://localhost:3000/user/post-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRhNzA0ZTE0NDQwYTA2MDI1M2IxNTgiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRXZTFTUUlPUWJBaHk5RFVydW1rekwuT0tsbFVhVHM4cDhsRDJKQ0JLdDBCR0NrQU92SDVGMiIsIl9fdiI6MCwiaWF0IjoxNzA4ODI0MzgwLCJleHAiOjE3MDg4Mjc5ODB9.wOgZS8B0SDe5WAXS_PhYEJK-9lATcIJ-metryKhRYeE
+GET http://localhost:3000/user/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWU3YzIwOWUyNTQzNzE0MDcyZjJmYjYiLCJmaXJzdF9uYW1lIjoiSmhvbiIsImxhc3RfbmFtZSI6IkRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJDJQY3Y2aHdjVW0xZVJlOUtUUUYuTGU3UnkwRmQxNGVvbm10bkM4S04vVlc0VGg0bDhyMkVtIiwiX192IjowLCJpYXQiOjE3MDk3MzYxMDMsImV4cCI6MTcwOTgyMjUwM30.dPo1h4J-xKTyyg2ExytaIBrLZA1IMOjcfjFUHfJcsoU
+###
+
+DELETE http://localhost:3000/user/posts/65e7bddf9128d90c075b9167
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRiYWFiMjg3NGNkNWY5ZTdmZGUyMTEiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCR5QU1xci9kUXNxQVRYU1hxNXF5dUFPZWFTaVpBeEgwNHd2dE8zdzBJbnVNY0tnNnJZQVlLUyIsIl9fdiI6MCwiaWF0IjoxNzA5Njg2MDkwLCJleHAiOjE3MDk3NzI0OTB9.TtZBN9J3mGpWS9i1G-lpa795vBoKn2CYv-YE9NacDZ8
+
+###
+
+DELETE http://localhost:3000/user/comments/65dbab39874cd5f9e7fde21a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRiYWFiMjg3NGNkNWY5ZTdmZGUyMTEiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCR5QU1xci9kUXNxQVRYU1hxNXF5dUFPZWFTaVpBeEgwNHd2dE8zdzBJbnVNY0tnNnJZQVlLUyIsIl9fdiI6MCwiaWF0IjoxNzA4ODk0OTAyLCJleHAiOjE3MDg5ODEzMDJ9.tiVjtTkWGRvVZnrx1K88U02QKcK8XSQFwLLmEqVC4b0
 
 ###
 
@@ -50,6 +56,13 @@ Content-Type: application/json
 
 {
 	"email": "josh@email.com",
-	"comment": "sample comment",
-	"post": "65da713614440a060253b15d"
+	"comment": "sample comment 2",
+	"post": "65de11840728a6b396542282"
 }
+
+###
+
+GET http://localhost:3000/user/posts/65ef11b79849e4afea9c7f30
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWVmMDU5OTQyMWFjZjU5ZTkwYmU1N2YiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJFNjWDVQSS9sb1NxVGhiYmJhVzJCRi5mci42cVFkOVA4MWtZOGtFR1h6R2o5cDIvRnRQSnVTIiwiX192IjowLCJpYXQiOjE3MTAxNjY0MDUsImV4cCI6MTcxMDI1MjgwNX0.h1h49G7A3a_30I8UtufUlZ3Xv56u2tYMC1gwrth8l4w
+
+###

@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
 const upload = multer({ dest: "./public/uploads/" }); // The folder to which the file has been saved
+const updateFiles = require("../updateFiles");
 const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
@@ -160,12 +161,14 @@ exports.post_creator_post = [
 			comments: [],
 			file: req.file
 				? {
+						filename: req.file.filename,
 						originalname: req.file.originalname,
 						mimetype: req.file.mimetype,
 						path: req.file.path,
 						size: req.file.size
 				  }
-				: null
+				: null,
+			trash: req.body.trash
 		});
 
 		if (!errors.isEmpty()) {
@@ -264,45 +267,20 @@ exports.update_post = [
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
+
 		// Create Posts object with escaped and trimmed data
 		const post = new Post({
+			_id: req.params.id,
 			title: req.body.title,
 			post: req.body.post,
 			date: new Date(),
 			author: req.body.author,
 			comments: req.body.comments,
-			file: req.file
-				? {
-						originalname: req.file.originalname,
-						mimetype: req.file.mimetype,
-						path: req.file.path,
-						size: req.file.size
-				  }
-				: null
+			// if a file is selected a new file will be uploaded
+			// and the old one will be deleted from the server
+			// if no file is selected it stays as it was before
+			file: req.file ? updateFiles(req.file, req.body.trash) : req.body.file
 		});
-
-		/* pending: add a function to clean multer trash after updating the post's file */
-
-		/* 
-			EXAMPLE:
-
-			const fs = require('fs');
-			const path = require('path');
-
-			// Assuming you have a function or route handler that identifies the file to delete
-			function deleteUploadedFile(filename) {
-			const filePath = path.join(__dirname, 'uploads/', filename); // Construct the path
-
-			fs.unlink(filePath, (err) => {
-				if (err) {
-				console.error(err);
-				// Handle the error appropriately (e.g., inform the user)
-				} else {
-				console.log(`File ${filename} deleted successfully.`);
-				}
-			});
-			}
-		*/
 
 		if (!errors.isEmpty()) {
 			res.json({

@@ -4,10 +4,13 @@ const { DateTime } = require("luxon");
 const Schema = mongoose.Schema;
 
 const File = new Schema({
+	_id: false,
+	filename: String,
 	originalname: String,
 	mimetype: String,
 	path: String,
-	size: Number
+	size: Number,
+	trash: String
 });
 
 const PostSchema = new Schema({
