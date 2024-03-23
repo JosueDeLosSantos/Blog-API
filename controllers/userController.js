@@ -128,9 +128,9 @@ exports.user_login_post = [
 ];
 
 // Display Post create form on GET
-exports.post_creator_get = (req, res, next) => {
+/* exports.post_creator_get = (req, res, next) => {
 	res.render("create-form");
-};
+}; */
 
 exports.post_creator_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
@@ -139,6 +139,7 @@ exports.post_creator_post = [
 		.isLength({ min: 1 })
 		.escape()
 		.withMessage("Title must be specified."),
+	body("description").trim().escape(),
 	body("post")
 		.trim()
 		.isLength({ min: 1 })
@@ -155,6 +156,7 @@ exports.post_creator_post = [
 		// Create Posts object with escaped and trimmed data
 		const post = new Post({
 			title: req.body.title,
+			description: req.body.description,
 			post: req.body.post,
 			date: new Date(),
 			author: req.body.author,
@@ -181,28 +183,21 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
-			res.json({ message: "Post created" });
+			// Finally returns an updated list of all posts
+			const posts = postList();
+			res.json({ posts });
 		}
 	})
 ];
 
 exports.posts_list = asyncHandler(async (req, res, next) => {
 	// Display a list of all posts
-	const posts = await Post.find().sort({ date: 1 }).populate("comments");
+	const posts = await Post.find({}, { post: 0, comments: 0 }).sort({ date: 1 });
+	//.populate("comments");
 
 	posts.forEach((_, i) => {
 		// Update posts dates to a more understandable date
 		posts[i] = { ...posts[i]._doc, date: posts[i].virtual_date };
-		if (posts[i].comments.length) {
-			// If posts contain any comments, update those comment's date
-			// to a more understandable date
-			posts[i].comments.forEach((_, j) => {
-				posts[i].comments[j]._doc = {
-					...posts[i].comments[j]._doc,
-					date: posts[i].comments[j].virtual_date
-				};
-			});
-		}
 	});
 
 	if (posts.length) {
@@ -229,12 +224,27 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	}
 	// Delete the post
 	await Post.findByIdAndDelete(req.params.id);
-	res.json({ message: "post deleted" });
+	// Finally returns an updated list of all posts
+	const posts = postList();
+	res.json({ posts });
 });
 
 // Display post to be updated
 exports.update_post_get = asyncHandler(async (req, res, next) => {
-	const post = await Post.findById(req.params.id);
+	let post = await Post.findById(req.params.id).populate("comments");
+	// Update post date to a more understandable date
+	post = { ...post._doc, date: post.virtual_date };
+
+	if (post.comments.length) {
+		// If post contain any comments, update those comment's date
+		// to a more understandable date
+		post.comments.forEach((_, i) => {
+			post.comments[i]._doc = {
+				...post.comments[i]._doc,
+				date: post.comments[i].virtual_date
+			};
+		});
+	}
 
 	if (post === null) {
 		// No results.
@@ -254,6 +264,7 @@ exports.update_post = [
 		.isLength({ min: 1 })
 		.escape()
 		.withMessage("Title must be specified."),
+	body("description").trim().escape(),
 	body("post")
 		.trim()
 		.isLength({ min: 1 })
@@ -272,6 +283,7 @@ exports.update_post = [
 		const post = new Post({
 			_id: req.params.id,
 			title: req.body.title,
+			description: req.body.description,
 			post: req.body.post,
 			date: new Date(),
 			author: req.body.author,
@@ -292,7 +304,22 @@ exports.update_post = [
 			// Data from form is valid.
 			// Save post in database
 			await Post.findByIdAndUpdate(req.params.id, post);
-			res.json({ message: "Post updated" });
+
+			const posts = postList();
+			// Finally returns an updated list of all posts
+			res.json({ posts });
 		}
 	})
 ];
+
+async function postList() {
+	// Display a list of all posts
+	const posts = await Post.find({}, { post: 0, comments: 0 }).sort({ date: 1 });
+
+	posts.forEach((_, i) => {
+		// Update posts dates to a more understandable date
+		posts[i] = { ...posts[i]._doc, date: posts[i].virtual_date };
+	});
+
+	return posts;
+}

@@ -15,6 +15,7 @@ const File = new Schema({
 
 const PostSchema = new Schema({
 	title: { type: String, required: true, minLength: 1 },
+	description: { type: String },
 	post: { type: String, required: true, minLength: 1 },
 	date: { type: Date, required: true },
 	author: { type: String, required: true, minLength: 2 },
