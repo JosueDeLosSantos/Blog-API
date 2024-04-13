@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-//const path = require("path");
+const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
@@ -28,6 +28,9 @@ app.use(cors());
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
+
+// Serve static files from the "public" directory
+app.use("/public/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);

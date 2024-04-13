@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-// This functions deletes unnecessary files an returns updated metadata
+// This function deletes unnecessary files an returns updated metadata
 // for newly added files.
 
 module.exports = (file, trash) => {
