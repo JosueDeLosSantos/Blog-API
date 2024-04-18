@@ -30,8 +30,8 @@ app.use("/", indexRouter);
 app.use("/user", userRouter);
 
 // Serve static files from the "public" directory
-// there's no need to include 'public' in the path since it is part of the root
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// adding 'public' in the virtual path is not a requirement
+app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploads")));
 
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);

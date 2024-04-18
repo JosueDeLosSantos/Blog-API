@@ -3,7 +3,7 @@ const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
-const upload = multer({ dest: "./uploads/" }); // The folder to which the file has been saved
+const upload = multer({ dest: "./public/uploads/" }); // The folder to which the file has been saved
 const updateFiles = require("../updateFiles");
 const User = require("../models/user");
 const Post = require("../models/post");
@@ -201,7 +201,11 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 	});
 
 	if (posts.length) {
-		res.json({ posts });
+		if (req.statusCode === 401) {
+			res.status(req.statusCode).json({ posts });
+		} else {
+			res.json({ posts });
+		}
 	} else {
 		res.json({ message: "no posts" });
 	}

@@ -4,8 +4,9 @@ const router = express.Router();
 const comment_controller = require("../controllers/commentController");
 const user_controller = require("../controllers/userController");
 // const Post = require("../models/post");
+const authenticateToken = require("../authenticator");
 
-router.get("/", user_controller.posts_list);
+router.get("/", authenticateToken, user_controller.posts_list);
 // comment on specific posts
 router.post("/", comment_controller.comment_post);
 
