@@ -11,6 +11,11 @@ exports.comment_post = [
 		.withMessage("Email must be specified.")
 		.isEmail()
 		.withMessage("A valid email must be specified"),
+	body("name")
+		.trim()
+		.isLength({ min: 2 })
+		.escape()
+		.withMessage("Name must be specified."),
 	body("comment")
 		.trim()
 		.isLength({ min: 1 })
@@ -22,6 +27,7 @@ exports.comment_post = [
 
 		const comment = new Comment({
 			email: req.body.email,
+			name: req.body.name,
 			comment: req.body.comment,
 			date: new Date(),
 			post: req.body.post // Blog post were comment will be added
@@ -40,7 +46,7 @@ exports.comment_post = [
 			const post = await Post.findById(comment.post);
 			post.comments.push(savedComment._id);
 			await Post.findByIdAndUpdate(post._id, post, {});
-			res.json({ message: "comment added" });
+			res.json({ date: comment.virtual_date });
 		}
 	})
 ];

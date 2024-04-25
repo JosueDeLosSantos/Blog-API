@@ -20,7 +20,7 @@ async function main() {
 	await mongoose.connect(mongoDB);
 	console.log("Debug: Should be connected?");
 	// await clearUsers();
-	await clearPosts();
+	// await clearPosts();
 	await clearComments();
 	console.log("Debug: Closing mongoose");
 	mongoose.connection.close();

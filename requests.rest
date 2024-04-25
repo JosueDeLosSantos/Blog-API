@@ -1,6 +1,8 @@
-GET http://localhost:3000
 
 ### see all posts on main page
+GET http://localhost:3000/user/posts/6620665f034c246bfdc81810
+
+###
 
 POST http://localhost:3000/user/sign-up
 Content-Type: application/json
@@ -27,21 +29,23 @@ Content-Type: application/json
 
 POST http://localhost:3000/user/create-post
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWVmMDU5OTQyMWFjZjU5ZTkwYmU1N2YiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJFNjWDVQSS9sb1NxVGhiYmJhVzJCRi5mci42cVFkOVA4MWtZOGtFR1h6R2o5cDIvRnRQSnVTIiwiX192IjowLCJpYXQiOjE3MTAxNjY0MDUsImV4cCI6MTcxMDI1MjgwNX0.h1h49G7A3a_30I8UtufUlZ3Xv56u2tYMC1gwrth8l4w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWZkYzE0OWIwNzgyMjI4M2U5NmU1MmUiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJHc4UEFMVC5kS28yREVFNEJGWVA2cU9WSWNvYWcyRFhwU2RmbTJ4RTM2OWZ3V0tud1BWTmlPIiwiX192IjowLCJpYXQiOjE3MTExMjkxOTIsImV4cCI6MTcxMTIxNTU5Mn0.axm_MkKm6taopyN5xo9fDT89CmhucVCITRBxSGhzTno
 
 {
-	"title": "1 example title",
-	"post": "1 example post",
+	"title": "3 example title",
+	"description": "This is the description",
+	"post": "2 example post",
 	"author": "Jhon Dow"
 }
 
 ###
 
 GET http://localhost:3000/user/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWU3YzIwOWUyNTQzNzE0MDcyZjJmYjYiLCJmaXJzdF9uYW1lIjoiSmhvbiIsImxhc3RfbmFtZSI6IkRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJDJQY3Y2aHdjVW0xZVJlOUtUUUYuTGU3UnkwRmQxNGVvbm10bkM4S04vVlc0VGg0bDhyMkVtIiwiX192IjowLCJpYXQiOjE3MDk3MzYxMDMsImV4cCI6MTcwOTgyMjUwM30.dPo1h4J-xKTyyg2ExytaIBrLZA1IMOjcfjFUHfJcsoU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWZjNjEzNTE1ZjRkN2U1ZDk2YWI4ZTUiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJFYxWEd3Z1FCSVBWck1QSlEyaVpJL2V2b3dXbUtQbC8wNEpnc2pCLlNOb0dHODNYbnMuUWJ1IiwiX192IjowLCJpYXQiOjE3MTEwMzg3NzgsImV4cCI6MTcxMTEyNTE3OH0.R9DrxM1CRzybvckReo_rl2v_qDhMw2NIVHHXBO08TRs
+
 ###
 
-DELETE http://localhost:3000/user/posts/65e7bddf9128d90c075b9167
+DELETE http://localhost:3000/user/posts/65fc617c15f4d7e5d96ab8ea
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRiYWFiMjg3NGNkNWY5ZTdmZGUyMTEiLCJmaXJzdF9uYW1lIjoiSm9zdWUiLCJsYXN0X25hbWUiOiJEZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCR5QU1xci9kUXNxQVRYU1hxNXF5dUFPZWFTaVpBeEgwNHd2dE8zdzBJbnVNY0tnNnJZQVlLUyIsIl9fdiI6MCwiaWF0IjoxNzA5Njg2MDkwLCJleHAiOjE3MDk3NzI0OTB9.TtZBN9J3mGpWS9i1G-lpa795vBoKn2CYv-YE9NacDZ8
 
 ###
@@ -56,13 +60,13 @@ Content-Type: application/json
 
 {
 	"email": "josh@email.com",
-	"comment": "sample comment 2",
-	"post": "65de11840728a6b396542282"
+	"comment": "sample comment 3",
+	"post": "65fcbabd90b9e936f90b8f85"
 }
 
 ###
 
-GET http://localhost:3000/user/posts/65ef11b79849e4afea9c7f30
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWVmMDU5OTQyMWFjZjU5ZTkwYmU1N2YiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJFNjWDVQSS9sb1NxVGhiYmJhVzJCRi5mci42cVFkOVA4MWtZOGtFR1h6R2o5cDIvRnRQSnVTIiwiX192IjowLCJpYXQiOjE3MTAxNjY0MDUsImV4cCI6MTcxMDI1MjgwNX0.h1h49G7A3a_30I8UtufUlZ3Xv56u2tYMC1gwrth8l4w
+GET http://localhost:3000/user/posts/65fcbabd90b9e936f90b8f85
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWZkYzE0OWIwNzgyMjI4M2U5NmU1MmUiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJHc4UEFMVC5kS28yREVFNEJGWVA2cU9WSWNvYWcyRFhwU2RmbTJ4RTM2OWZ3V0tud1BWTmlPIiwiX192IjowLCJpYXQiOjE3MTExMjkxOTIsImV4cCI6MTcxMTIxNTU5Mn0.axm_MkKm6taopyN5xo9fDT89CmhucVCITRBxSGhzTno
 
 ###

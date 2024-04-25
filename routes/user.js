@@ -15,7 +15,7 @@ router.post("/create-post", authenticateToken, user_controller.post_creator_post
 // delete post
 router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
 // display single post
-router.get("/posts/:id", authenticateToken, user_controller.update_post_get);
+router.get("/posts/:id", user_controller.update_post_get);
 // update post
 router.post("/posts/:id", authenticateToken, user_controller.update_post);
 //delete comment
