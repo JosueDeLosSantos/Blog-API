@@ -159,7 +159,7 @@ exports.post_creator_post = [
 		const allowedMimeTypes = ["image/jpeg", "image/png"];
 		if (!allowedMimeTypes.includes(req.file.mimetype)) {
 			// clean trash first
-			updateFiles(req.file, req.file.filename);
+			updateFiles(undefined, req.file.filename);
 			return Promise.reject("Only JPEG and PNG images are allowed");
 		}
 
@@ -169,7 +169,7 @@ exports.post_creator_post = [
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
 		// Create Posts object with escaped and trimmed data
-		const post = new Post({
+		let post = new Post({
 			title: req.body.title,
 			description: req.body.description,
 			post: req.body.post,
@@ -198,6 +198,8 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
+			// format date for the front end
+			post = { ...post._doc, date: post.virtual_date };
 			res.json({ post });
 		}
 	})
@@ -235,6 +237,9 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	}
 	// Delete the post
 	await Post.findByIdAndDelete(req.params.id);
+	// Delete post's image from the server if there's any
+	updateFiles(undefined, post.file.filename);
+	// return deleted file to the front end
 	res.json({ post });
 });
 
@@ -290,7 +295,8 @@ exports.update_post = [
 			if (!allowedMimeTypes.includes(req.file.mimetype)) {
 				// clean trash first
 				updateFiles(req.file, req.file.filename);
-				// set file to null to avoid file to be saved later in the functions chain
+				// set file to null to avoid req.body.trash to be deleted
+				// req.body.trash should only be deleted if a valid file is selected
 				req.file = null;
 				return Promise.reject("Only JPEG and PNG images are allowed");
 			}
@@ -303,7 +309,7 @@ exports.update_post = [
 		const errors = validationResult(req);
 
 		// Create Posts object with escaped and trimmed data
-		const post = new Post({
+		let post = new Post({
 			_id: req.params.id,
 			title: req.body.title,
 			description: req.body.description,
@@ -315,7 +321,7 @@ exports.update_post = [
 			// and the old one will be deleted from the server.
 			// if no file is selected it will return undefined
 			// which will make mongoose preserve the old value in the document.
-			file: req.file ? updateFiles(req.file, req.body.trash) : undefined
+			file: req.file ? updateFiles(req.file, req.body.trash) : req.body.file
 		});
 
 		if (!errors.isEmpty()) {
@@ -329,6 +335,8 @@ exports.update_post = [
 			// Save post in database
 			await Post.findByIdAndUpdate(req.params.id, post);
 
+			// format date for the front end
+			post = { ...post._doc, date: post.virtual_date };
 			res.json({ post });
 		}
 	})
