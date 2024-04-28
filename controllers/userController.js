@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { body, validationResult } = require("express-validator");
+const { body, check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
@@ -150,6 +150,21 @@ exports.post_creator_post = [
 		.isLength({ min: 2 })
 		.escape()
 		.withMessage("Author must be specified."),
+	check("file").custom((_, { req }) => {
+		if (!req.file) {
+			// No file uploaded
+			return Promise.reject("Please select an image file");
+		}
+
+		const allowedMimeTypes = ["image/jpeg", "image/png"];
+		if (!allowedMimeTypes.includes(req.file.mimetype)) {
+			// clean trash first
+			updateFiles(req.file, req.file.filename);
+			return Promise.reject("Only JPEG and PNG images are allowed");
+		}
+
+		return true; // Validation successful
+	}),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -161,6 +176,7 @@ exports.post_creator_post = [
 			date: new Date(),
 			author: req.body.author,
 			comments: [],
+			// multer files's info can be accessed through req.file not req.body.file
 			file: req.file
 				? {
 						filename: req.file.filename,
@@ -169,8 +185,7 @@ exports.post_creator_post = [
 						path: req.file.path,
 						size: req.file.size
 				  }
-				: null,
-			trash: req.body.trash
+				: null
 		});
 
 		if (!errors.isEmpty()) {
@@ -183,22 +198,14 @@ exports.post_creator_post = [
 			// Data from form is valid.
 			// Save post in database
 			await post.save();
-			// Finally returns an updated list of all posts
-			const posts = postList();
-			res.json({ posts });
+			res.json({ post });
 		}
 	})
 ];
 
 exports.posts_list = asyncHandler(async (req, res, next) => {
 	// Display a list of all posts
-	const posts = await Post.find({}, { post: 0, comments: 0 }).sort({ date: 1 });
-	//.populate("comments");
-
-	posts.forEach((_, i) => {
-		// Update posts dates to a more understandable date
-		posts[i] = { ...posts[i]._doc, date: posts[i].virtual_date };
-	});
+	const posts = await postList();
 
 	if (posts.length) {
 		if (req.statusCode === 401) {
@@ -228,9 +235,7 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	}
 	// Delete the post
 	await Post.findByIdAndDelete(req.params.id);
-	// Finally returns an updated list of all posts
-	const posts = postList();
-	res.json({ posts });
+	res.json({ post });
 });
 
 // Display post to be updated
@@ -279,6 +284,20 @@ exports.update_post = [
 		.isLength({ min: 2 })
 		.escape()
 		.withMessage("Author must be specified."),
+	check("file").custom((_, { req }) => {
+		if (req.file) {
+			const allowedMimeTypes = ["image/jpeg", "image/png"];
+			if (!allowedMimeTypes.includes(req.file.mimetype)) {
+				// clean trash first
+				updateFiles(req.file, req.file.filename);
+				// set file to null to avoid file to be saved later in the functions chain
+				req.file = null;
+				return Promise.reject("Only JPEG and PNG images are allowed");
+			}
+		}
+
+		return true; // Validation successful
+	}),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -293,9 +312,10 @@ exports.update_post = [
 			author: req.body.author,
 			comments: req.body.comments,
 			// if a file is selected a new file will be uploaded
-			// and the old one will be deleted from the server
-			// if no file is selected it stays as it was before
-			file: req.file ? updateFiles(req.file, req.body.trash) : req.body.file
+			// and the old one will be deleted from the server.
+			// if no file is selected it will return undefined
+			// which will make mongoose preserve the old value in the document.
+			file: req.file ? updateFiles(req.file, req.body.trash) : undefined
 		});
 
 		if (!errors.isEmpty()) {
@@ -309,9 +329,7 @@ exports.update_post = [
 			// Save post in database
 			await Post.findByIdAndUpdate(req.params.id, post);
 
-			const posts = postList();
-			// Finally returns an updated list of all posts
-			res.json({ posts });
+			res.json({ post });
 		}
 	})
 ];

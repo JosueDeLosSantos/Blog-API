@@ -9,8 +9,7 @@ const File = new Schema({
 	originalname: String,
 	mimetype: String,
 	path: String,
-	size: Number,
-	trash: String
+	size: Number
 });
 
 const PostSchema = new Schema({
