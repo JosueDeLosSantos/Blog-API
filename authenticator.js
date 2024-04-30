@@ -23,7 +23,11 @@ function authenticateToken(req, res, next) {
 	}
 
 	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-		if (err && req.url !== "/") return res.sendStatus(403); // 'Forbidden';
+		if (err && req.url !== "/") {
+			return res.sendStatus(403); // 'Forbidden';
+		} else if (err && req.url === "/") {
+			req.statusCode = 403;
+		}
 		req.user = user;
 		next();
 	});

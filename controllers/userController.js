@@ -118,7 +118,7 @@ exports.user_login_post = [
 		if (match) {
 			// If passwords match generate accessToken
 			const accessToken = jwt.sign(newUser, `${process.env.ACCESS_TOKEN_SECRET}`, {
-				expiresIn: "24h"
+				expiresIn: "1m"
 			});
 			res.json({ accessToken: accessToken });
 		} else {
@@ -126,11 +126,6 @@ exports.user_login_post = [
 		}
 	})
 ];
-
-// Display Post create form on GET
-/* exports.post_creator_get = (req, res, next) => {
-	res.render("create-form");
-}; */
 
 exports.post_creator_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
@@ -189,6 +184,11 @@ exports.post_creator_post = [
 		});
 
 		if (!errors.isEmpty()) {
+			// if file was uploaded, clean trash
+			if (req.file.filename) {
+				updateFiles(undefined, req.file.filename);
+			}
+			// returns post object to correct mistakes in the front end
 			res.json({
 				post: post,
 				errors: errors.array()
@@ -210,7 +210,8 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 	const posts = await postList();
 
 	if (posts.length) {
-		if (req.statusCode === 401) {
+		console.log(req.statusCode);
+		if (req.statusCode) {
 			res.status(req.statusCode).json({ posts });
 		} else {
 			res.json({ posts });
@@ -278,7 +279,11 @@ exports.update_post = [
 		.isLength({ min: 1 })
 		.escape()
 		.withMessage("Title must be specified."),
-	body("description").trim().escape(),
+	body("description")
+		.trim()
+		.isLength({ min: 10 })
+		.escape()
+		.withMessage("Description must be specified."),
 	body("post")
 		.trim()
 		.isLength({ min: 1 })
@@ -294,7 +299,7 @@ exports.update_post = [
 			const allowedMimeTypes = ["image/jpeg", "image/png"];
 			if (!allowedMimeTypes.includes(req.file.mimetype)) {
 				// clean trash first
-				updateFiles(req.file, req.file.filename);
+				updateFiles(undefined, req.file.filename);
 				// set file to null to avoid req.body.trash to be deleted
 				// req.body.trash should only be deleted if a valid file is selected
 				req.file = null;
