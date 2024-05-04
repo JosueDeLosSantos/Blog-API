@@ -12,7 +12,7 @@ const mongoDb = process.env.DATABASE_URL;
 
 const app = express();
 
-mongoose.connect(mongoDb);
+mongoose.connect(mongoDb, { maxPoolSize: 4 }); // amount of allowed connections
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo conection error"));
 db.on("connected", console.log.bind(console, "connected to database"));

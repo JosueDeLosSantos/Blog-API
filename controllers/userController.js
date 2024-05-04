@@ -118,7 +118,7 @@ exports.user_login_post = [
 		if (match) {
 			// If passwords match generate accessToken
 			const accessToken = jwt.sign(newUser, `${process.env.ACCESS_TOKEN_SECRET}`, {
-				expiresIn: "1m"
+				expiresIn: "24h"
 			});
 			res.json({ accessToken: accessToken });
 		} else {

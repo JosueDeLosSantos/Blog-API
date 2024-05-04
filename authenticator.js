@@ -1,15 +1,13 @@
 const jwt = require("jsonwebtoken");
 
-/* The following middleware is executed on all protected routes
-	example:
-	app.get('/posts', authenticateToken, (req, res) => {
-		console.log(req);
-		res.json(
-			posts.filter((post) => post.username === req.user.name)
-		);
-});
-*/
-
+/**
+ * Authenticates the token provided in the request headers.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {undefined} This function does not return a value.
+ */
 function authenticateToken(req, res, next) {
 	const authHeader = req.headers["authorization"];
 
@@ -26,7 +24,7 @@ function authenticateToken(req, res, next) {
 		if (err && req.url !== "/") {
 			return res.sendStatus(403); // 'Forbidden';
 		} else if (err && req.url === "/") {
-			req.statusCode = 403;
+			req.statusCode = req.statusCode ? req.statusCode : 403;
 		}
 		req.user = user;
 		next();
@@ -34,23 +32,3 @@ function authenticateToken(req, res, next) {
 }
 
 module.exports = authenticateToken;
-
-/* 
-***Client-side Usage
-***JavaScript***
-
-function makeRequest(url, method) {
-    const jwtToken = localStorage.getItem('token');
-    const headers = {};
-    if (jwtToken) {
-        headers['Authorization'] = `Bearer ${jwtToken}`;
-    }
-    return fetch(url, {
-        method: 'POST', // or any other HTTP method
-        mode: 'cors',
-        headers: headers,
-        // ... (other request options)
-    });
-}
-
- */

@@ -1,9 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 
-// This function deletes unnecessary files an returns updated metadata
-// for newly added files.
-
+/**
+ * Deletes an unnecessary file and returns updated metadata for a newly added file.
+ *
+ * @param {Object} file - The file to be deleted and updated.
+ * @param {string} trash - The name of the file to be deleted.
+ * @return {Object} The updated metadata of the newly added file.
+ */
 module.exports = (file, trash) => {
 	// unnecessary file's path
 	const filePath = path.join(__dirname, `public/uploads/${trash}`);

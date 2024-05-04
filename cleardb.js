@@ -15,26 +15,20 @@ const mongoDB = process.env.DATABASE_URL;
 
 main().catch((err) => console.log(err));
 
+/**
+ * Connects to the MongoDB database, clears all users, posts, and comments, and then closes the connection.
+ *
+ * @return {Promise<void>} Promise that resolves when the function completes successfully.
+ */
 async function main() {
 	console.log("Debug: About to connect");
-	await mongoose.connect(mongoDB);
-	console.log("Debug: Should be connected?");
-	await clearUsers();
-	/* await clearPosts();
-	await clearComments();
-	console.log("Debug: Closing mongoose"); */
-	mongoose.connection.close();
-}
+	await mongoose.connect(mongoDB, { maxPoolSize: 3 });
+	console.log("maxPoolSize takes care of connections");
 
-async function clearUsers() {
 	await User.deleteMany({});
 	console.log("deleted all users");
-}
-async function clearPosts() {
 	await Post.deleteMany({});
 	console.log("deleted all posts");
-}
-async function clearComments() {
 	await Comment.deleteMany({});
 	console.log("deleted all comments");
 }
