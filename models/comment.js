@@ -13,7 +13,7 @@ const commentsSchema = new Schema({
 
 function removeAst(dateString) {
 	// Define the regular expression pattern to match "AST"
-	const pattern = /\bAST\b/gi;
+	const pattern = /\bAST\b | \bADT\b/gi;
 
 	// Replace occurrences of "AST" with an empty string
 	const cleanedDate = dateString.replace(pattern, "");

@@ -210,14 +210,13 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 	const posts = await postList();
 
 	if (posts.length) {
-		console.log(req.statusCode);
 		if (req.statusCode) {
 			res.status(req.statusCode).json({ posts });
 		} else {
 			res.json({ posts });
 		}
 	} else {
-		res.json({ message: "no posts" });
+		res.status(req.statusCode).json({ message: "no posts" });
 	}
 });
 

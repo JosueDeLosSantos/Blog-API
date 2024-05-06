@@ -22,7 +22,7 @@ main().catch((err) => console.log(err));
  */
 async function main() {
 	console.log("Debug: About to connect");
-	await mongoose.connect(mongoDB, { maxPoolSize: 3 });
+	await mongoose.connect(mongoDB);
 	console.log("maxPoolSize takes care of connections");
 
 	await User.deleteMany({});
@@ -31,4 +31,6 @@ async function main() {
 	console.log("deleted all posts");
 	await Comment.deleteMany({});
 	console.log("deleted all comments");
+	console.log("closing connection");
+	await mongoose.connection.close();
 }

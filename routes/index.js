@@ -8,6 +8,6 @@ const authenticateToken = require("../authenticator");
 
 router.get("/", authenticateToken, user_controller.posts_list);
 // comment on specific posts
-router.post("/", comment_controller.comment_post);
+router.post("/comments", comment_controller.comment_post);
 
 module.exports = router;

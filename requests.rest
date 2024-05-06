@@ -1,6 +1,19 @@
 
-### see all posts on main page
-GET http://localhost:3000/user/posts/6620665f034c246bfdc81810
+### show list of posts
+GET http://localhost:3000/
+
+
+### post comment
+POST http://localhost:3000/comments
+Content-Type: application/json
+
+{
+	"email": "valie@hotmail.com",
+	"name": "jhon",
+	"comment": "some comment",
+	"post": "662ec690919e990a187616a1"
+}
+
 
 ###
 
