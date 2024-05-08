@@ -22,12 +22,10 @@ const PostSchema = new Schema({
 	file: File
 });
 
-function removeAst(dateString) {
-	// Define the regular expression pattern to match "AST"
-	const pattern = /\bAST\b/gi;
-
-	// Replace occurrences of "AST" with an empty string
-	const cleanedDate = dateString.replace(pattern, "");
+function removeTimezone(dateString) {
+	// Extract the date and time without the timezone
+	const regex = /^.*(AM|PM)/;
+	const cleanedDate = dateString.match(regex)[0];
 
 	return cleanedDate;
 }
@@ -36,7 +34,7 @@ PostSchema.virtual("virtual_date").get(function () {
 	const notFormattedDate = DateTime.fromJSDate(this.date)
 		.setLocale("en")
 		.toLocaleString(DateTime.DATETIME_FULL); // format: February 14, 2024 at 6:04 PM AST
-	const formattedDate = removeAst(notFormattedDate);
+	const formattedDate = removeTimezone(notFormattedDate);
 	return formattedDate;
 });
 

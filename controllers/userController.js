@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
 const upload = multer({ dest: "./public/uploads/" }); // The folder to which the file has been saved
-const updateFiles = require("../updateFiles");
+const { updateFiles } = require("../updateFiles");
 const User = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
@@ -26,24 +26,24 @@ exports.user_sign_up = [
 		.withMessage("Last name must be specified."),
 	body("username")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 5 })
 		.escape()
-		.withMessage("username must be specified.")
+		.withMessage("username must have at least 5 characters.")
 		.isAlphanumeric()
 		.withMessage("username has non-alphanumeric characters.")
 		.custom(async (value) => {
 			const user = await User.findOne({ username: `${value}` });
 			if (user) {
-				throw new Error("username already in use");
+				throw new Error("Username already in use");
 			}
 		}),
 	body("password")
 		.trim()
 		.isLength({ min: 6 })
 		.escape()
-		.withMessage("password must be specified.")
+		.withMessage("Password must have at least 6 characters.")
 		.isAlphanumeric()
-		.withMessage("Password has non-alphanumeric characters."),
+		.withMessage("Password is not alphanumeric."),
 	body("passwordConfirmation")
 		.custom((value, { req }) => {
 			return value === req.body.password;
@@ -69,10 +69,17 @@ exports.user_sign_up = [
 			return;
 		} else {
 			// Data from form is valid.
-			// store hashedPassword in Db
-			user.password = hashedPassword;
-			await user.save();
-			res.json({ message: "Successful sign up" });
+			/* the following condition makes sure there's only one admin in the blog */
+			if (await checkIfUsersExist()) {
+				res.status(401).json({ message: "An admin already exists" });
+			} else {
+				// store hashedPassword in Db
+				user.password = hashedPassword;
+				await user.save();
+				res.json({
+					message: "Successful sign up, you are now the admin of this blog"
+				});
+			}
 		}
 	})
 ];
@@ -80,18 +87,18 @@ exports.user_sign_up = [
 exports.user_login_post = [
 	body("username")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 5 })
 		.escape()
-		.withMessage("username must be specified.")
+		.withMessage("Username must have at least 5 characters.")
 		.isAlphanumeric()
 		.withMessage("username has non-alphanumeric characters."),
 	body("password")
 		.trim()
 		.isLength({ min: 6 })
 		.escape()
-		.withMessage("password must be specified.")
+		.withMessage("Password must have at least 6 characters.")
 		.isAlphanumeric()
-		.withMessage("Password has non-alphanumeric characters."),
+		.withMessage("Password most be alphanumeric."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -108,19 +115,28 @@ exports.user_login_post = [
 		const user = await User.find({
 			username: req.body.username
 		});
-		// Transform user into js object
-		const newUser = JSON.parse(JSON.stringify(user))[0];
-		// Get user's hashed password
-		const passwordHash = newUser.password;
-		// Decode hashed password and authenticate passwords
-		const match = await bcrypt.compare(req.body.password, passwordHash);
 
-		if (match) {
-			// If passwords match generate accessToken
-			const accessToken = jwt.sign(newUser, `${process.env.ACCESS_TOKEN_SECRET}`, {
-				expiresIn: "24h"
-			});
-			res.json({ accessToken: accessToken });
+		if (user.length) {
+			// Transform user into js object
+			const newUser = JSON.parse(JSON.stringify(user))[0];
+			// Get user's hashed password
+			const passwordHash = newUser.password;
+			// Decode hashed password and authenticate passwords
+			const match = await bcrypt.compare(req.body.password, passwordHash);
+
+			if (match) {
+				// If passwords match generate accessToken
+				const accessToken = jwt.sign(
+					newUser,
+					`${process.env.ACCESS_TOKEN_SECRET}`,
+					{
+						expiresIn: "24h"
+					}
+				);
+				res.json({ accessToken: accessToken });
+			} else {
+				res.json({ message: "Username or Password is incorrect" });
+			}
 		} else {
 			res.json({ message: "Username or Password is incorrect" });
 		}
@@ -131,20 +147,24 @@ exports.post_creator_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
-		.isLength({ min: 1 })
+		.isLength({ min: 10 })
 		.escape()
-		.withMessage("Title must be specified."),
-	body("description").trim().escape(),
+		.withMessage("Title must have at least 10 characters."),
+	body("description")
+		.trim()
+		.isLength({ min: 10 })
+		.escape()
+		.withMessage("Description must have at least 10 characters."),
 	body("post")
 		.trim()
-		.isLength({ min: 1 })
+		.isLength({ min: 10 })
 		.escape()
-		.withMessage("Post must be specified."),
+		.withMessage("Post must have at least 10 characters."),
 	body("author")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 5 })
 		.escape()
-		.withMessage("Author must be specified."),
+		.withMessage("Author name should have at least 5 characters."),
 	check("file").custom((_, { req }) => {
 		if (!req.file) {
 			// No file uploaded
@@ -185,7 +205,7 @@ exports.post_creator_post = [
 
 		if (!errors.isEmpty()) {
 			// if file was uploaded, clean trash
-			if (req.file.filename) {
+			if (req?.file?.filename) {
 				updateFiles(undefined, req.file.filename);
 			}
 			// returns post object to correct mistakes in the front end
@@ -216,7 +236,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 			res.json({ posts });
 		}
 	} else {
-		res.status(req.statusCode).json({ message: "no posts" });
+		res.json({ message: "no posts" });
 	}
 });
 
@@ -275,24 +295,24 @@ exports.update_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
-		.isLength({ min: 1 })
+		.isLength({ min: 10 })
 		.escape()
-		.withMessage("Title must be specified."),
+		.withMessage("Title must have at least 10 characters."),
 	body("description")
 		.trim()
 		.isLength({ min: 10 })
 		.escape()
-		.withMessage("Description must be specified."),
+		.withMessage("Description must have at least 10 characters."),
 	body("post")
 		.trim()
-		.isLength({ min: 1 })
+		.isLength({ min: 10 })
 		.escape()
-		.withMessage("Post must be specified."),
+		.withMessage("Post must have at least 10 characters."),
 	body("author")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 5 })
 		.escape()
-		.withMessage("Author must be specified."),
+		.withMessage("Author name should have at least 5 characters."),
 	check("file").custom((_, { req }) => {
 		if (req.file) {
 			const allowedMimeTypes = ["image/jpeg", "image/png"];
@@ -329,6 +349,10 @@ exports.update_post = [
 		});
 
 		if (!errors.isEmpty()) {
+			// if file was uploaded, clean trash
+			if (req?.file?.filename) {
+				updateFiles(undefined, req.file.filename);
+			}
 			res.json({
 				post: post,
 				errors: errors.array()
@@ -357,3 +381,13 @@ async function postList() {
 
 	return posts;
 }
+
+const checkIfUsersExist = async () => {
+	try {
+		const userCount = await User.countDocuments({});
+		return userCount > 0;
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+};

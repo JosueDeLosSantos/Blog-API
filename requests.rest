@@ -34,7 +34,7 @@ POST http://localhost:3000/user/log-in
 Content-Type: application/json
 
 {
-	"username": "jhondow",
+	"username": "josuesito0",
 	"password": "admin123"
 }
 
@@ -42,13 +42,14 @@ Content-Type: application/json
 
 POST http://localhost:3000/user/create-post
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWZkYzE0OWIwNzgyMjI4M2U5NmU1MmUiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJHc4UEFMVC5kS28yREVFNEJGWVA2cU9WSWNvYWcyRFhwU2RmbTJ4RTM2OWZ3V0tud1BWTmlPIiwiX192IjowLCJpYXQiOjE3MTExMjkxOTIsImV4cCI6MTcxMTIxNTU5Mn0.axm_MkKm6taopyN5xo9fDT89CmhucVCITRBxSGhzTno
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjNiODg1YmQ1NDg1MTEyOGRkNzI2OTYiLCJmaXJzdF9uYW1lIjoiam9zdWUiLCJsYXN0X25hbWUiOiJkZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRlc09iRGRNNEttMWxqVWlkOE9ldGl1ZnhHSVNmZVZPTmp4bVB3MzNvVmJ1cVdIOVZxb2tCMiIsIl9fdiI6MCwiaWF0IjoxNzE1MTkyNTc1LCJleHAiOjE3MTUyNzg5NzV9.TirZdvHDp1IqgLsSoe2SMITE2hHIWq7dFYgXE30x2NA
 
 {
 	"title": "3 example title",
 	"description": "This is the description",
 	"post": "2 example post",
-	"author": "Jhon Dow"
+	"author": "Jhon Dow",
+	"file": ""
 }
 
 ###
@@ -79,7 +80,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/user/posts/65fcbabd90b9e936f90b8f85
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWZkYzE0OWIwNzgyMjI4M2U5NmU1MmUiLCJmaXJzdF9uYW1lIjoiamhvbiIsImxhc3RfbmFtZSI6ImRvdyIsInVzZXJuYW1lIjoiamhvbmRvdyIsInBhc3N3b3JkIjoiJDJhJDEwJHc4UEFMVC5kS28yREVFNEJGWVA2cU9WSWNvYWcyRFhwU2RmbTJ4RTM2OWZ3V0tud1BWTmlPIiwiX192IjowLCJpYXQiOjE3MTExMjkxOTIsImV4cCI6MTcxMTIxNTU5Mn0.axm_MkKm6taopyN5xo9fDT89CmhucVCITRBxSGhzTno
+GET http://localhost:3000/user/posts/663a98e81e82954be0a65f70
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjNhOThkOTFlODI5NTRiZTBhNjVmNmIiLCJmaXJzdF9uYW1lIjoiam9zdWUiLCJsYXN0X25hbWUiOiJkZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRmcEw2V0JneTI5U2ZlaTQvM1lyaVR1bGVTajgzamhHRmNOdHRSNWZMRkFqRWFqNW40SC8uLiIsIl9fdiI6MCwiaWF0IjoxNzE1MTE2NTMwLCJleHAiOjE3MTUyMDI5MzB9.hm_B9fH2vgSErCylFTcZ-x_XDDyFlRKEJserzay7uLQ
 
 ###

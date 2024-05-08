@@ -7,6 +7,7 @@ console.log("This script clears all users, all posts, and all comments");
 const User = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
+const { deleteAllFiles } = require("./updateFiles");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
@@ -31,6 +32,8 @@ async function main() {
 	console.log("deleted all posts");
 	await Comment.deleteMany({});
 	console.log("deleted all comments");
+	deleteAllFiles();
+	console.log("deleted all files");
 	console.log("closing connection");
 	await mongoose.connection.close();
 }

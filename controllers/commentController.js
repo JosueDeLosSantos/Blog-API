@@ -42,15 +42,11 @@ exports.comment_post = [
 		} else {
 			// save comment in database
 			const savedComment = await comment.save();
-			console.log("comment", comment);
-			console.log("savedComment", savedComment);
 			// Find the proper post for the comment
 			const post = await Post.findById(comment.post);
-			console.log(post);
-			console.log("post comment", comment.post);
 			// insert comment in the first index of the post's comments array,
 			// so most recent comments will show first
-			post?.comments?.splice(0, 0, savedComment._id);
+			post.comments.splice(0, 0, savedComment._id);
 			// update proper post
 			await Post.findByIdAndUpdate(post._id, post, {});
 			res.json({ date: comment.virtual_date });
