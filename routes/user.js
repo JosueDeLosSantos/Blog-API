@@ -4,21 +4,22 @@ const authenticateToken = require("../authenticator");
 const user_controller = require("../controllers/userController");
 const comment_controller = require("../controllers/commentController");
 
-// sign up new admin
+router.get("/posts/:id", user_controller.get_post);
+
+router.post("/admin/sign-up", user_controller.admin_sign_up);
+
+router.post("/admin/log-in", user_controller.admin_login);
+
 router.post("/sign-up", user_controller.user_sign_up);
-// log in after signing up
-router.post("/log-in", user_controller.user_login_post);
 
-// create new post
-router.post("/create-post", authenticateToken, user_controller.post_creator_post);
+router.post("/log-in", user_controller.user_login);
 
-// delete post
+router.post("/create-post", authenticateToken, user_controller.create_post);
+
+router.patch("/posts/:id", authenticateToken, user_controller.update_post);
+
 router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
-// display single post
-router.get("/posts/:id", user_controller.update_post_get);
-// update post
-router.post("/posts/:id", authenticateToken, user_controller.update_post);
-//delete comment
+
 router.delete("/comments/:id", authenticateToken, comment_controller.delete_comment);
 
 module.exports = router;

@@ -4,7 +4,8 @@ require("dotenv").config();
 
 console.log("This script clears all users, all posts, and all comments");
 
-const User = require("./models/user");
+const { Admin } = require("./models/user");
+const { User } = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
 const { deleteAllFiles } = require("./updateFiles");
@@ -26,6 +27,8 @@ async function main() {
 	await mongoose.connect(mongoDB);
 	console.log("maxPoolSize takes care of connections");
 
+	await Admin.deleteMany({});
+	console.log("deleted all administrators");
 	await User.deleteMany({});
 	console.log("deleted all users");
 	await Post.deleteMany({});
