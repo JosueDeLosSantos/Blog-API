@@ -48,11 +48,19 @@ exports.admin_comment = [
 			// so most recent comments will show first
 			post.comments.splice(0, 0, savedComment._id);
 			// update proper post
-			let updatedPost = await Post.findByIdAndUpdate(post._id, post, {}).populate(
-				"comments"
-			);
+			await Post.findByIdAndUpdate(post._id, post, {});
+			let newPost = await Post.findById(post._id).populate("comments");
 
-			res.json({ updatedPost });
+			const postWithFormattedDates = {
+				...newPost._doc,
+				date: newPost.virtual_date,
+				comments: newPost.comments.map((comment) => ({
+					...comment._doc,
+					date: comment.virtual_date
+				}))
+			};
+
+			res.json({ post: postWithFormattedDates });
 		}
 	})
 ];

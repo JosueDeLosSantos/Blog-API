@@ -75,11 +75,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWRiYWFiM
 
 POST http://localhost:3000/user/comments
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjQwZGEwNDdlNTA5YzE2ZGU0NTI2NTgiLCJmaXJzdF9uYW1lIjoiam9zdWUiLCJsYXN0X25hbWUiOiJkZSBsb3Mgc2FudG9zIiwidXNlcm5hbWUiOiJqb3N1ZXNpdG8iLCJwYXNzd29yZCI6IiQyYSQxMCRCUEx2ZC45RWM5U0gxWi9XWXpqVUV1RWlRS0N1Z3k2R3FYVWtURm9vU1d3eXdzcTNFZk1zLiIsIl9fdiI6MCwiaWF0IjoxNzE1NTI2MTczLCJleHAiOjE3MTU2MTI1NzN9.Zag3jkyfcgESfKFFKUJPsoYHQRhFrnrcL7QWhujQRgg
 
 {
 	"email": "josh@email.com",
-	"comment": "sample comment 3",
-	"post": "65fcbabd90b9e936f90b8f85"
+	"name": "josh",
+	"comment": "message 16",
+	"post": "6640dc6ab1ed525addc11b90"
 }
 
 ###
