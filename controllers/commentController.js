@@ -3,7 +3,7 @@ const { body, validationResult } = require("express-validator");
 const Comment = require("../models/comment");
 const Post = require("../models/post");
 
-exports.comment_post = [
+exports.admin_comment = [
 	body("email")
 		.trim()
 		.isLength({ min: 3 })
@@ -48,13 +48,16 @@ exports.comment_post = [
 			// so most recent comments will show first
 			post.comments.splice(0, 0, savedComment._id);
 			// update proper post
-			await Post.findByIdAndUpdate(post._id, post, {});
-			res.json({ date: comment.virtual_date });
+			let updatedPost = await Post.findByIdAndUpdate(post._id, post, {}).populate(
+				"comments"
+			);
+
+			res.json({ updatedPost });
 		}
 	})
 ];
 // Delete specific comments
-exports.delete_comment = asyncHandler(async (req, res, next) => {
+exports.admin_delete_comment = asyncHandler(async (req, res, next) => {
 	// Find comment
 	const comment = await Comment.findById(req.params.id);
 	// Find post where it belongs

@@ -199,7 +199,7 @@ exports.admin_login = [
 					newUser,
 					`${process.env.ACCESS_TOKEN_SECRET}`,
 					{
-						expiresIn: "1m"
+						expiresIn: "24h"
 					}
 				);
 				res.json({ accessToken: accessToken });
@@ -258,7 +258,7 @@ exports.user_login = [
 					newUser,
 					`${process.env.ACCESS_TOKEN_SECRET}`,
 					{
-						expiresIn: "1m"
+						expiresIn: "1h"
 					}
 				);
 				res.json({ accessToken: accessToken });
@@ -496,7 +496,11 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 		return next(err);
 	}
 
-	res.json({ post });
+	if (req.statusCode) {
+		res.status(req.statusCode).json({ post });
+	} else {
+		res.json({ post });
+	}
 });
 
 async function postList() {

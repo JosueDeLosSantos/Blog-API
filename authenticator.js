@@ -12,8 +12,9 @@ function authenticateToken(req, res, next) {
 	const authHeader = req.headers["authorization"];
 
 	const token = authHeader && authHeader.split(" ")[1];
+
 	if (token == null) {
-		if (req.url !== "/") {
+		if (req.url !== "/" && req.url !== `/posts/${req.params.id}`) {
 			return res.sendStatus(401); // 'Unauthorized';
 		} else {
 			req.statusCode = 401;
@@ -21,9 +22,9 @@ function authenticateToken(req, res, next) {
 	}
 
 	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-		if (err && req.url !== "/") {
+		if (err && req.url !== "/" && req.url !== `/posts/${req.params.id}`) {
 			return res.sendStatus(403); // 'Forbidden';
-		} else if (err && req.url === "/") {
+		} else if (err && (req.url === "/" || req.url === `/posts/${req.params.id}`)) {
 			req.statusCode = req.statusCode ? req.statusCode : 403;
 		}
 		req.user = user;
