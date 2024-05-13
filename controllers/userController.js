@@ -24,6 +24,13 @@ exports.admin_sign_up = [
 		.isLength({ min: 2 })
 		.escape()
 		.withMessage("Last name must be specified."),
+	body("email")
+		.trim()
+		.isLength({ min: 3 })
+		.escape()
+		.withMessage("email must be specified.")
+		.isEmail()
+		.withMessage("A valid email must be specified"),
 	body("username")
 		.trim()
 		.isLength({ min: 5 })
@@ -39,9 +46,9 @@ exports.admin_sign_up = [
 		}),
 	body("password")
 		.trim()
-		.isLength({ min: 6 })
+		.isLength({ min: 8 })
 		.escape()
-		.withMessage("Password must have at least 6 characters.")
+		.withMessage("Password must have at least 8 characters.")
 		.isAlphanumeric()
 		.withMessage("Password is not alphanumeric."),
 	body("passwordConfirmation")
@@ -57,6 +64,7 @@ exports.admin_sign_up = [
 		const user = new Admin({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
+			email: req.body.email,
 			username: req.body.username,
 			password: req.body.password
 		});
@@ -98,6 +106,13 @@ exports.user_sign_up = [
 		.isLength({ min: 2 })
 		.escape()
 		.withMessage("Last name must be specified."),
+	body("email")
+		.trim()
+		.isLength({ min: 3 })
+		.escape()
+		.withMessage("email must be specified.")
+		.isEmail()
+		.withMessage("A valid email must be specified"),
 	body("username")
 		.trim()
 		.isLength({ min: 5 })
@@ -113,9 +128,9 @@ exports.user_sign_up = [
 		}),
 	body("password")
 		.trim()
-		.isLength({ min: 6 })
+		.isLength({ min: 8 })
 		.escape()
-		.withMessage("Password must have at least 6 characters.")
+		.withMessage("Password must have at least 8 characters.")
 		.isAlphanumeric()
 		.withMessage("Password is not alphanumeric."),
 	body("passwordConfirmation")
@@ -131,6 +146,7 @@ exports.user_sign_up = [
 		const user = new User({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
+			email: req.body.email,
 			username: req.body.username,
 			password: req.body.password
 		});

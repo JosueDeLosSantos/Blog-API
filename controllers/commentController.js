@@ -4,21 +4,9 @@ const Comment = require("../models/comment");
 const Post = require("../models/post");
 
 exports.admin_comment = [
-	body("email")
-		.trim()
-		.isLength({ min: 3 })
-		.escape()
-		.withMessage("Email must be specified.")
-		.isEmail()
-		.withMessage("A valid email must be specified"),
-	body("name")
-		.trim()
-		.isLength({ min: 2 })
-		.escape()
-		.withMessage("Name must be specified."),
 	body("comment")
 		.trim()
-		.isLength({ min: 1 })
+		.isLength({ min: 3 })
 		.escape()
 		.withMessage("Comment must be specified."),
 	asyncHandler(async (req, res, next) => {
@@ -26,8 +14,8 @@ exports.admin_comment = [
 		const errors = validationResult(req);
 
 		const comment = new Comment({
-			email: req.body.email,
-			name: req.body.name,
+			email: req.user.email,
+			name: req.user.first_name + " " + req.user.last_name,
 			comment: req.body.comment,
 			date: new Date(),
 			post: req.body.post // Blog post were comment will be added
@@ -57,7 +45,8 @@ exports.admin_comment = [
 				comments: newPost.comments.map((comment) => ({
 					...comment._doc,
 					date: comment.virtual_date
-				}))
+				})),
+				user: req.user
 			};
 
 			res.json({ post: postWithFormattedDates });
