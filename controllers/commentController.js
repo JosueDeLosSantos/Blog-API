@@ -2,8 +2,9 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const Comment = require("../models/comment");
 const Post = require("../models/post");
+const { Admin } = require("../models/user");
 
-exports.admin_comment = [
+exports.add_comment = [
 	body("comment")
 		.trim()
 		.isLength({ min: 3 })
@@ -17,6 +18,7 @@ exports.admin_comment = [
 			email: req.user.email,
 			name: req.user.first_name + " " + req.user.last_name,
 			comment: req.body.comment,
+			author: req.user._id,
 			date: new Date(),
 			post: req.body.post // Blog post were comment will be added
 		});
@@ -49,7 +51,7 @@ exports.admin_comment = [
 				user: req.user
 			};
 
-			res.json({ post: postWithFormattedDates });
+			res.json({ post: postWithFormattedDates, user: req.user });
 		}
 	})
 ];
@@ -57,12 +59,21 @@ exports.admin_comment = [
 exports.admin_delete_comment = asyncHandler(async (req, res, next) => {
 	// Find comment
 	const comment = await Comment.findById(req.params.id);
-	// Find post where it belongs
-	const post = await Post.findById(comment.post);
-	// Update post
-	post.comments = post.comments.filter((param) => param != req.params.id);
-	await Post.findByIdAndUpdate(post._id, post, {});
-	// Delete comment
-	await Comment.findByIdAndDelete(req.params.id);
-	res.json({ message: "comment deleted" });
+	// Check if user is an admin
+	const isAdmin = await Admin.findById(req.user._id);
+	// comment will be deleted only by its author or the blog's admin
+	if (comment.author.toString() !== req.user._id.toString() && !isAdmin) {
+		res.status(403).send("You are not allowed to delete this comment.");
+		return;
+	} else {
+		// Find post where comment is
+		const post = await Post.findById(comment.post);
+		// Update post
+		post.comments = post.comments.filter((param) => param != req.params.id);
+		await Post.findByIdAndUpdate(post._id, post, {});
+		const newPost = await Post.findById(post._id).populate("comments");
+		// Delete comment
+		await Comment.findByIdAndDelete(req.params.id);
+		res.json({ post: newPost, user: req.user });
+	}
 });

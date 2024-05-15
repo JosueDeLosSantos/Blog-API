@@ -7,6 +7,7 @@ const commentsSchema = new Schema({
 	email: { type: String, required: true, maxLength: 50 },
 	name: { type: String, required: true, maxLength: 100 },
 	comment: { type: String, required: true, maxLength: 3000 },
+	author: { type: Schema.Types.ObjectId, ref: "User" },
 	date: { type: Date, required: true },
 	post: { type: Schema.Types.ObjectId, ref: "Post" }
 });

@@ -16,7 +16,7 @@ router.post("/log-in", user_controller.user_login);
 
 router.post("/create-post", authenticateToken, user_controller.create_post);
 
-router.post("/comments", authenticateToken, comment_controller.admin_comment);
+router.post("/comments", authenticateToken, comment_controller.add_comment);
 
 router.put("/posts/:id", authenticateToken, user_controller.update_post);
 

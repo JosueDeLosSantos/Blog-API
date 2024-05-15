@@ -515,7 +515,7 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 	if (req.statusCode) {
 		res.status(req.statusCode).json({ post });
 	} else {
-		res.json({ post });
+		res.json({ post: post, user: req.user });
 	}
 });
 
