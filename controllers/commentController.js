@@ -47,8 +47,7 @@ exports.add_comment = [
 				comments: newPost.comments.map((comment) => ({
 					...comment._doc,
 					date: comment.virtual_date
-				})),
-				user: req.user
+				}))
 			};
 
 			res.json({ post: postWithFormattedDates, user: req.user });
@@ -77,3 +76,49 @@ exports.admin_delete_comment = asyncHandler(async (req, res, next) => {
 		res.json({ post: newPost, user: req.user });
 	}
 });
+
+exports.update_comment = [
+	body("comment")
+		.trim()
+		.isLength({ min: 3 })
+		.escape()
+		.withMessage("Comment must be specified."),
+	asyncHandler(async (req, res, next) => {
+		// Extract the validation errors from a request
+		const errors = validationResult(req);
+
+		const comment = new Comment({
+			_id: req.body._id,
+			email: req.user.email,
+			name: req.user.first_name + " " + req.user.last_name,
+			comment: req.body.comment,
+			author: req.user._id,
+			date: new Date(),
+			post: req.body.post
+		});
+		if (!errors.isEmpty()) {
+			// There are errors, return wrong typed data and errors
+			res.json({
+				comment: comment,
+				errors: errors.array()
+			});
+			return;
+		} else {
+			// update comment in database
+			await Comment.findByIdAndUpdate(comment._id, comment, {});
+			// Find the proper post for the comment
+			const post = await Post.findById(comment.post).populate("comments");
+
+			const postWithFormattedDates = {
+				...post._doc,
+				date: post.virtual_date,
+				comments: post.comments.map((comment) => ({
+					...comment._doc,
+					date: comment.virtual_date
+				}))
+			};
+
+			res.json({ post: postWithFormattedDates, user: req.user });
+		}
+	})
+];

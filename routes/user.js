@@ -20,6 +20,8 @@ router.post("/comments", authenticateToken, comment_controller.add_comment);
 
 router.put("/posts/:id", authenticateToken, user_controller.update_post);
 
+router.put("/comments", authenticateToken, comment_controller.update_comment);
+
 router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
 
 router.delete(
