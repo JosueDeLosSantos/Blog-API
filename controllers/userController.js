@@ -291,24 +291,19 @@ exports.create_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ min: 10, max: 140 })
 		.escape()
-		.withMessage("Title must have at least 10 characters."),
+		.withMessage("Title must have at least 10 characters and a maximum of 140."),
 	body("description")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ max: 370 })
 		.escape()
-		.withMessage("Description must have at least 10 characters."),
+		.withMessage("Description must not exceed 370 characters."),
 	body("post")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ min: 10, max: 100000 })
 		.escape()
-		.withMessage("Post must have at least 10 characters."),
-	body("author")
-		.trim()
-		.isLength({ min: 5 })
-		.escape()
-		.withMessage("Author name should have at least 5 characters."),
+		.withMessage("Post must have at least 10 characters and a maximum of 100000."),
 	check("file").custom((_, { req }) => {
 		if (!req.file) {
 			// No file uploaded
@@ -333,7 +328,7 @@ exports.create_post = [
 			description: req.body.description,
 			post: req.body.post,
 			date: new Date(),
-			author: req.body.author,
+			author: req.user.first_name + " " + req.user.last_name,
 			comments: [],
 			// multer files's info can be accessed through req.file not req.body.file
 			file: req.file
@@ -373,24 +368,20 @@ exports.update_post = [
 	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ min: 10, max: 140 })
 		.escape()
-		.withMessage("Title must have at least 10 characters."),
+		.withMessage("Title must have at least 10 characters and a maximum of 140."),
 	body("description")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ max: 370 })
 		.escape()
-		.withMessage("Description must have at least 10 characters."),
+		.withMessage("Description must not exceed 370 characters."),
 	body("post")
 		.trim()
-		.isLength({ min: 10 })
+		.isLength({ min: 10, max: 100000 })
 		.escape()
-		.withMessage("Post must have at least 10 characters."),
-	body("author")
-		.trim()
-		.isLength({ min: 5 })
-		.escape()
-		.withMessage("Author name should have at least 5 characters."),
+		.withMessage("Post must have at least 10 characters and a maximum of 100000."),
+
 	check("file").custom((_, { req }) => {
 		if (req.file) {
 			const allowedMimeTypes = ["image/jpeg", "image/png"];
@@ -417,7 +408,7 @@ exports.update_post = [
 			description: req.body.description,
 			post: req.body.post,
 			date: new Date(),
-			author: req.body.author,
+			author: req.user.first_name + " " + req.user.last_name,
 			comments: req.body.comments,
 			// if a file is selected a new file will be uploaded
 			// and the old one will be deleted from the server.

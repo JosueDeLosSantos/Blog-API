@@ -7,9 +7,9 @@ const { Admin } = require("../models/user");
 exports.add_comment = [
 	body("comment")
 		.trim()
-		.isLength({ min: 3 })
+		.isLength({ min: 2, max: 3000 })
 		.escape()
-		.withMessage("Comment must be specified."),
+		.withMessage("Comment must have at least 2 characters and a maximum of 3000."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request
 		const errors = validationResult(req);
@@ -80,9 +80,9 @@ exports.admin_delete_comment = asyncHandler(async (req, res, next) => {
 exports.update_comment = [
 	body("comment")
 		.trim()
-		.isLength({ min: 3 })
+		.isLength({ min: 2, max: 3000 })
 		.escape()
-		.withMessage("Comment must be specified."),
+		.withMessage("Comment must have at least 2 characters and a maximum of 3000."),
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request
 		const errors = validationResult(req);
