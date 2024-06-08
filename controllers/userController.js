@@ -96,28 +96,34 @@ exports.user_sign_up = [
 	// Validate and sanitize fields.
 	body("first_name")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 2, max: 40 })
 		.escape()
-		.withMessage("First name must be specified.")
+		.withMessage(
+			"First name must be specified with a minimum of 2 characters and a maximum of 40 characters."
+		)
 		.isAlpha()
 		.withMessage("First name has non-alpha characters."),
 	body("last_name")
 		.trim()
-		.isLength({ min: 2 })
+		.isLength({ min: 2, max: 70 })
 		.escape()
-		.withMessage("Last name must be specified."),
+		.withMessage(
+			"Last name must be specified with a minimum of 2 characters and a maximum of 70 characters."
+		),
 	body("email")
 		.trim()
-		.isLength({ min: 3 })
+		.isLength({ min: 3, max: 100 })
 		.escape()
-		.withMessage("email must be specified.")
+		.withMessage(
+			"email must be specified with a minimum of 3 characters and a maximum of 100."
+		)
 		.isEmail()
 		.withMessage("A valid email must be specified"),
 	body("username")
 		.trim()
-		.isLength({ min: 5 })
+		.isLength({ min: 5, max: 50 })
 		.escape()
-		.withMessage("username must have at least 5 characters.")
+		.withMessage("username must have at least 5 characters and a maximum of 50.")
 		.isAlphanumeric()
 		.withMessage("username has non-alphanumeric characters.")
 		.custom(async (value) => {
@@ -128,9 +134,9 @@ exports.user_sign_up = [
 		}),
 	body("password")
 		.trim()
-		.isLength({ min: 8 })
+		.isLength({ min: 8, max: 16 })
 		.escape()
-		.withMessage("Password must have at least 8 characters.")
+		.withMessage("Password must have at least 8 characters and a maximum of 16.")
 		.isAlphanumeric()
 		.withMessage("Password is not alphanumeric."),
 	body("passwordConfirmation")
@@ -168,6 +174,119 @@ exports.user_sign_up = [
 		}
 	})
 ];
+
+exports.user_update = [
+	// Validate and sanitize fields.
+	body("first_name")
+		.trim()
+		.isLength({ min: 2, max: 40 })
+		.escape()
+		.withMessage(
+			"First name must be specified with a minimum of 2 characters and a maximum of 40 characters."
+		)
+		.isAlpha()
+		.withMessage("First name has non-alpha characters."),
+	body("last_name")
+		.trim()
+		.isLength({ min: 2, max: 70 })
+		.escape()
+		.withMessage(
+			"Last name must be specified with a minimum of 2 characters and a maximum of 70 characters."
+		),
+	body("email")
+		.trim()
+		.isLength({ min: 3, max: 100 })
+		.escape()
+		.withMessage(
+			"email must be specified with a minimum of 3 characters and a maximum of 100."
+		)
+		.isEmail()
+		.withMessage("A valid email must be specified"),
+	body("username")
+		.trim()
+		.isLength({ min: 5, max: 50 })
+		.escape()
+		.withMessage("username must have at least 5 characters and a maximum of 50.")
+		.isAlphanumeric()
+		.withMessage("username has non-alphanumeric characters.")
+		.custom(async (value, { req }) => {
+			const user = await User.findOne({ username: `${value}` });
+			if (user && user.username !== req.user.username) {
+				throw new Error("Username already in use");
+			}
+		}),
+	body("password")
+		.optional({ checkFalsy: true })
+		.trim()
+		.isLength({ min: 8, max: 16 })
+		.escape()
+		.withMessage("Password must have at least 8 characters and a maximum of 16.")
+		.custom(async (value, { req }) => {
+			const match = await bcrypt.compare(value, req.user.password);
+			if (!match && value.length) {
+				throw new Error("this is not your current password");
+			}
+		}),
+	body("newPassword")
+		.optional({ checkFalsy: true })
+		.trim()
+		.isLength({ min: 8, max: 16 })
+		.escape()
+		.withMessage("Password must have at least 8 characters and a maximum of 16.")
+		.isAlphanumeric()
+		.withMessage("Password is not alphanumeric."),
+	body("newPasswordConfirmation")
+		.custom((value, { req }) => {
+			return value === req.body.newPassword;
+		})
+		.withMessage("This password does not match your new password"),
+	// Process request after validation and sanitization.
+	asyncHandler(async (req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+
+		let hashedPassword = req.user.password;
+		if (req.body.newPassword.length) {
+			hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+		}
+
+		const user = new User({
+			_id: req.user._id,
+			first_name: req.body.first_name,
+			last_name: req.body.last_name,
+			email: req.body.email,
+			username: req.body.username,
+			password: hashedPassword
+		});
+
+		if (!errors.isEmpty()) {
+			res.json({
+				errors: errors.array()
+			});
+			return;
+		} else {
+			// Data from form is valid.
+			// Update user in mongodb
+			await User.findByIdAndUpdate(req.user._id, user);
+			// update all comments related to the user
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						name: req.body.first_name + " " + req.body.last_name,
+						email: req.body.email
+					}
+				} // Update the name and email fields of the comments
+			);
+
+			return res.status(200).json({ message: "User updated" });
+		}
+	})
+];
+
+exports.get_user = asyncHandler(async (req, res, next) => {
+	res.json({ user: req.user });
+});
 
 exports.admin_login = [
 	body("username")
@@ -447,7 +566,7 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 		if (req.statusCode) {
 			res.status(req.statusCode).json({ posts });
 		} else {
-			res.json({ posts });
+			res.json({ posts: posts, user: req.user });
 		}
 	} else {
 		if (req.statusCode) {

@@ -6,6 +6,8 @@ const comment_controller = require("../controllers/commentController");
 
 router.get("/posts/:id", authenticateToken, user_controller.get_post);
 
+router.get("/profile", authenticateToken, user_controller.get_user);
+
 router.post("/admin/sign-up", user_controller.admin_sign_up);
 
 router.post("/admin/log-in", user_controller.admin_login);
@@ -17,6 +19,8 @@ router.post("/log-in", user_controller.user_login);
 router.post("/create-post", authenticateToken, user_controller.create_post);
 
 router.post("/comments", authenticateToken, comment_controller.add_comment);
+
+router.put("/profile", authenticateToken, user_controller.user_update);
 
 router.put("/posts/:id", authenticateToken, user_controller.update_post);
 
