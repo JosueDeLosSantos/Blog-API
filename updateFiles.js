@@ -9,16 +9,18 @@ const path = require("path");
  * @return {Object} The updated metadata of the newly added file.
  */
 const updateFiles = (file, trash) => {
-	// unnecessary file's path
-	const filePath = path.join(__dirname, `public/uploads/${trash}`);
-	// deletion of unnecessary file
-	fs.unlink(filePath, (err) => {
-		if (err) {
-			console.error(err);
-		} else {
-			console.log(`File ${trash} deleted successfully.`);
-		}
-	});
+	if (trash) {
+		// unnecessary file's path
+		const filePath = path.join(__dirname, `public/uploads/${trash}`);
+		// deletion of unnecessary file
+		fs.unlink(filePath, (err) => {
+			if (err) {
+				console.error(err);
+			} else {
+				console.log(`File ${trash} deleted successfully.`);
+			}
+		});
+	}
 
 	if (file) {
 		// updated metadata

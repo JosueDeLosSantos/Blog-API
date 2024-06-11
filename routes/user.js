@@ -22,6 +22,8 @@ router.post("/comments", authenticateToken, comment_controller.add_comment);
 
 router.put("/profile", authenticateToken, user_controller.user_update);
 
+router.put("/profile/photo", authenticateToken, user_controller.user_photo_update);
+
 router.put("/posts/:id", authenticateToken, user_controller.update_post);
 
 router.put("/comments", authenticateToken, comment_controller.update_comment);

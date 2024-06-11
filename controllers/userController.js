@@ -46,7 +46,7 @@ exports.admin_sign_up = [
 		}),
 	body("password")
 		.trim()
-		.isLength({ min: 8 })
+		.isLength({ min: 8, max: 16 })
 		.escape()
 		.withMessage("Password must have at least 8 characters.")
 		.isAlphanumeric()
@@ -284,8 +284,45 @@ exports.user_update = [
 	})
 ];
 
+exports.user_photo_update = [
+	upload.single("file"),
+	asyncHandler(async (req, res, next) => {
+		const user = req.file
+			? new User({
+					_id: req.user._id,
+					first_name: req.user.first_name,
+					last_name: req.user.last_name,
+					email: req.user.email,
+					username: req.user.username,
+					password: req.user.password,
+					photo: updateFiles(req.file, req.body.trash)
+			  })
+			: new User({
+					_id: req.user._id,
+					first_name: req.user.first_name,
+					last_name: req.user.last_name,
+					email: req.user.email,
+					username: req.user.username,
+					password: req.user.password,
+					photo: null
+			  });
+
+		if (!req.file) {
+			updateFiles(undefined, req.body.trash);
+			await User.findByIdAndUpdate(req.user._id, user);
+			res.json({
+				message: `Trash file ${req.body.trash} deleted successfully`
+			});
+		} else {
+			await User.findByIdAndUpdate(req.user._id, user);
+			res.json({ photo: req.file });
+		}
+	})
+];
+
 exports.get_user = asyncHandler(async (req, res, next) => {
-	res.json({ user: req.user });
+	const user = await User.findById(req.user._id);
+	res.json({ user: user });
 });
 
 exports.admin_login = [
