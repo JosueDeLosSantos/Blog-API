@@ -227,11 +227,29 @@ exports.admin_photo_update = [
 		if (!req.file) {
 			updateFiles(undefined, req.body.trash);
 			await Admin.findByIdAndUpdate(req.user._id, user);
+			// update the profile picture of the user's comments
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						photo: null
+					}
+				}
+			);
 			res.json({
 				message: `Trash file ${req.body.trash} deleted successfully`
 			});
 		} else {
 			await Admin.findByIdAndUpdate(req.user._id, user);
+			// update the profile picture of the user's comments
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						photo: req.file
+					}
+				}
+			);
 			res.json({ photo: req.file });
 		}
 	})
@@ -460,11 +478,29 @@ exports.user_photo_update = [
 		if (!req.file) {
 			updateFiles(undefined, req.body.trash);
 			await User.findByIdAndUpdate(req.user._id, user);
+			// update the profile picture of the user's comments
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						photo: null
+					}
+				}
+			);
 			res.json({
 				message: `Trash file ${req.body.trash} deleted successfully`
 			});
 		} else {
 			await User.findByIdAndUpdate(req.user._id, user);
+			// update the profile picture of the user's comments
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						photo: req.file
+					}
+				}
+			);
 			res.json({ photo: req.file });
 		}
 	})

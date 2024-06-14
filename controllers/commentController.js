@@ -16,6 +16,8 @@ exports.add_comment = [
 		const errors = validationResult(req);
 
 		let photoOwner = null;
+		// the following approach provides the most updated photo
+		// since req.user.photo at this point might be outdated
 		const isUser = await User.findById(req.user._id);
 		if (isUser) {
 			photoOwner = isUser;
