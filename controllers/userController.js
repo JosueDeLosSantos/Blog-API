@@ -92,6 +92,156 @@ exports.admin_sign_up = [
 	})
 ];
 
+exports.admin_update = [
+	// Validate and sanitize fields.
+	body("first_name")
+		.trim()
+		.isLength({ min: 2, max: 40 })
+		.escape()
+		.withMessage(
+			"First name must be specified with a minimum of 2 characters and a maximum of 40 characters."
+		)
+		.isAlpha()
+		.withMessage("First name has non-alpha characters."),
+	body("last_name")
+		.trim()
+		.isLength({ min: 2, max: 70 })
+		.escape()
+		.withMessage(
+			"Last name must be specified with a minimum of 2 characters and a maximum of 70 characters."
+		),
+	body("email")
+		.trim()
+		.isLength({ min: 3, max: 100 })
+		.escape()
+		.withMessage(
+			"email must be specified with a minimum of 3 characters and a maximum of 100."
+		)
+		.isEmail()
+		.withMessage("A valid email must be specified"),
+	body("username")
+		.trim()
+		.isLength({ min: 5, max: 50 })
+		.escape()
+		.withMessage("username must have at least 5 characters and a maximum of 50.")
+		.isAlphanumeric()
+		.withMessage("username has non-alphanumeric characters.")
+		.custom(async (value, { req }) => {
+			const user = await Admin.findOne({ username: `${value}` });
+			if (user && user.username !== req.user.username) {
+				throw new Error("Username already in use");
+			}
+		}),
+	body("password")
+		.optional({ checkFalsy: true })
+		.trim()
+		.isLength({ min: 8, max: 16 })
+		.escape()
+		.withMessage("Password must have at least 8 characters and a maximum of 16.")
+		.custom(async (value, { req }) => {
+			const match = await bcrypt.compare(value, req.user.password);
+			if (!match && value.length) {
+				throw new Error("this is not your current password");
+			}
+		}),
+	body("newPassword")
+		.optional({ checkFalsy: true })
+		.trim()
+		.isLength({ min: 8, max: 16 })
+		.escape()
+		.withMessage("Password must have at least 8 characters and a maximum of 16.")
+		.isAlphanumeric()
+		.withMessage("Password is not alphanumeric."),
+	body("newPasswordConfirmation")
+		.custom((value, { req }) => {
+			return value === req.body.newPassword;
+		})
+		.withMessage("This password does not match your new password"),
+	// Process request after validation and sanitization.
+	asyncHandler(async (req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+
+		let hashedPassword = req.user.password;
+		if (req.body.newPassword.length) {
+			hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+		}
+
+		const user = new Admin({
+			_id: req.user._id,
+			first_name: req.body.first_name,
+			last_name: req.body.last_name,
+			email: req.body.email,
+			username: req.body.username,
+			password: hashedPassword
+		});
+
+		if (!errors.isEmpty()) {
+			res.json({
+				errors: errors.array()
+			});
+			return;
+		} else {
+			// Data from form is valid.
+			// Update user in mongodb
+			await Admin.findByIdAndUpdate(req.user._id, user);
+			// update all comments related to the user
+			await Comment.updateMany(
+				{ author: req.user._id }, // Query to find comments whose author is the same as the updated user
+				{
+					$set: {
+						name: req.body.first_name + " " + req.body.last_name,
+						email: req.body.email
+					}
+				} // Update the name and email fields of the comments
+			);
+
+			return res.status(200).json({ message: "Admin updated" });
+		}
+	})
+];
+
+exports.admin_photo_update = [
+	upload.single("file"),
+	asyncHandler(async (req, res, next) => {
+		const user = req.file
+			? new Admin({
+					_id: req.user._id,
+					first_name: req.user.first_name,
+					last_name: req.user.last_name,
+					email: req.user.email,
+					username: req.user.username,
+					password: req.user.password,
+					photo: updateFiles(req.file, req.body.trash)
+			  })
+			: new Admin({
+					_id: req.user._id,
+					first_name: req.user.first_name,
+					last_name: req.user.last_name,
+					email: req.user.email,
+					username: req.user.username,
+					password: req.user.password,
+					photo: null
+			  });
+
+		if (!req.file) {
+			updateFiles(undefined, req.body.trash);
+			await Admin.findByIdAndUpdate(req.user._id, user);
+			res.json({
+				message: `Trash file ${req.body.trash} deleted successfully`
+			});
+		} else {
+			await Admin.findByIdAndUpdate(req.user._id, user);
+			res.json({ photo: req.file });
+		}
+	})
+];
+
+exports.get_admin = asyncHandler(async (req, res, next) => {
+	const user = await Admin.findById(req.user._id);
+	res.json({ user: user });
+});
+
 exports.user_sign_up = [
 	// Validate and sanitize fields.
 	body("first_name")

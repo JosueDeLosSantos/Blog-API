@@ -3,13 +3,23 @@ const { DateTime } = require("luxon");
 
 const Schema = mongoose.Schema;
 
+const File = new mongoose.Schema({
+	_id: false,
+	filename: String,
+	originalname: String,
+	mimetype: String,
+	path: String,
+	size: Number
+});
+
 const commentsSchema = new Schema({
 	email: { type: String, required: true, maxLength: 50 },
 	name: { type: String, required: true, maxLength: 100 },
 	comment: { type: String, required: true, maxLength: 3000 },
 	author: { type: Schema.Types.ObjectId, ref: "User" },
 	date: { type: Date, required: true },
-	post: { type: Schema.Types.ObjectId, ref: "Post" }
+	post: { type: Schema.Types.ObjectId, ref: "Post" },
+	photo: File
 });
 
 function removeTimezone(dateString) {

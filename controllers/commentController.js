@@ -3,6 +3,7 @@ const { body, validationResult } = require("express-validator");
 const Comment = require("../models/comment");
 const Post = require("../models/post");
 const { Admin } = require("../models/user");
+const { User } = require("../models/user");
 
 exports.add_comment = [
 	body("comment")
@@ -14,13 +15,22 @@ exports.add_comment = [
 		// Extract the validation errors from a request
 		const errors = validationResult(req);
 
+		let photoOwner = null;
+		const isUser = await User.findById(req.user._id);
+		if (isUser) {
+			photoOwner = isUser;
+		} else {
+			photoOwner = await Admin.findById(req.user._id);
+		}
+
 		const comment = new Comment({
 			email: req.user.email,
 			name: req.user.first_name + " " + req.user.last_name,
 			comment: req.body.comment,
 			author: req.user._id,
 			date: new Date(),
-			post: req.body.post // Blog post were comment will be added
+			post: req.body.post, // Blog post were comment will be added
+			photo: photoOwner.photo
 		});
 		if (!errors.isEmpty()) {
 			// There are errors, return wrong typed data and errors

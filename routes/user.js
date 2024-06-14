@@ -8,6 +8,8 @@ router.get("/posts/:id", authenticateToken, user_controller.get_post);
 
 router.get("/profile", authenticateToken, user_controller.get_user);
 
+router.get("/admin/profile", authenticateToken, user_controller.get_admin);
+
 router.post("/admin/sign-up", user_controller.admin_sign_up);
 
 router.post("/admin/log-in", user_controller.admin_login);
@@ -22,7 +24,11 @@ router.post("/comments", authenticateToken, comment_controller.add_comment);
 
 router.put("/profile", authenticateToken, user_controller.user_update);
 
+router.put("/admin/profile", authenticateToken, user_controller.admin_update);
+
 router.put("/profile/photo", authenticateToken, user_controller.user_photo_update);
+
+router.put("/admin/profile/photo", authenticateToken, user_controller.admin_photo_update);
 
 router.put("/posts/:id", authenticateToken, user_controller.update_post);
 
