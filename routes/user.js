@@ -38,6 +38,8 @@ router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
 
 router.post("/upload-image", user_controller.blog_picture_upload);
 
+router.delete("/delete-image/:id", user_controller.blog_pictures_deletion);
+
 router.delete(
 	"/comments/:id",
 	authenticateToken,

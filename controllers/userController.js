@@ -859,8 +859,9 @@ const storage = multer.diskStorage({
 	filename: function (req, file, cb) {
 		const parts = file.originalname.split(".");
 		const ext = parts[parts.length - 1];
+		const fileName = parts[0];
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-		cb(null, `${uniqueSuffix}.${ext}`);
+		cb(null, `${fileName}-${uniqueSuffix}.${ext}`);
 	}
 });
 
@@ -869,13 +870,22 @@ const blogUpload = multer({ storage: storage });
 exports.blog_picture_upload = [
 	blogUpload.single("upload"),
 	asyncHandler(async (req, res, next) => {
-		console.log(req.file);
-		return res.send({
+		res.status(200).json({
 			// http://localhost:3000/public/uploads/1a10411a500a4cf6dfa2cfcf974569f1
 			url: `http://localhost:3000/${req.file.path}`
 		});
 	})
 ];
+
+exports.blog_pictures_deletion = asyncHandler(async (req, res, next) => {
+	// const url = req.body.url.split("/");
+	// const trash = url[url.length - 1];
+	const trash = req.params.id;
+	updateFiles(undefined, trash);
+	res.status(200).json({
+		message: `deleted ${trash}`
+	});
+});
 
 async function postList() {
 	// Display a list of all posts
