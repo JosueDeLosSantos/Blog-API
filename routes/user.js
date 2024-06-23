@@ -36,6 +36,8 @@ router.put("/comments", authenticateToken, comment_controller.update_comment);
 
 router.delete("/posts/:id", authenticateToken, user_controller.delete_post);
 
+router.post("/upload-image", user_controller.blog_picture_upload);
+
 router.delete(
 	"/comments/:id",
 	authenticateToken,

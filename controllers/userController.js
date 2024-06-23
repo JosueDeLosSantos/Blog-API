@@ -852,6 +852,31 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 	}
 });
 
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, "public/uploads/");
+	},
+	filename: function (req, file, cb) {
+		const parts = file.originalname.split(".");
+		const ext = parts[parts.length - 1];
+		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+		cb(null, `${uniqueSuffix}.${ext}`);
+	}
+});
+
+const blogUpload = multer({ storage: storage });
+
+exports.blog_picture_upload = [
+	blogUpload.single("upload"),
+	asyncHandler(async (req, res, next) => {
+		console.log(req.file);
+		return res.send({
+			// http://localhost:3000/public/uploads/1a10411a500a4cf6dfa2cfcf974569f1
+			url: `http://localhost:3000/${req.file.path}`
+		});
+	})
+];
+
 async function postList() {
 	// Display a list of all posts
 	const posts = await Post.find({}, { post: 0, comments: 0 }).sort({ date: 1 });
