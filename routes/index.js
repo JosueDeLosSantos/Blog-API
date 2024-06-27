@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const user_controller = require("../controllers/userController");
-const authenticateToken = require("../authenticator");
+const authenticateToken = require("../utils/authenticator");
 
 router.get("/", authenticateToken, user_controller.posts_list);
 

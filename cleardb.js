@@ -8,7 +8,7 @@ const { Admin } = require("./models/user");
 const { User } = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
-const { deleteAllFiles } = require("./updateFiles");
+const { deleteAllFiles } = require("../utils/updateFiles");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);

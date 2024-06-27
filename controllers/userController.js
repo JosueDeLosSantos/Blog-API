@@ -3,12 +3,34 @@ const { body, check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
-const upload = multer({ dest: "./public/uploads/" }); // The folder to which the file has been saved
-const { updateFiles } = require("../updateFiles");
+const upload = multer({ dest: "./public/uploads/" });
+const { updateFiles } = require("../utils/updateFiles");
 const { Admin } = require("../models/user");
 const { User } = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
+const postsUrlCorrector = require("../utils/postsInspector");
+
+/* const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		// The route to which files will be saved
+		cb(null, "public/uploads/");
+	},
+	filename: function (req, file, cb) {
+		const parts = file.originalname.split(".");
+		const ext = parts[parts.length - 1];
+		const fileName = parts[0];
+		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+		cb(null, `${fileName}-${uniqueSuffix}.${ext}`);
+	}
+});
+
+const blogUpload = multer({ storage: storage }); */
+
+const cpUpload = upload.fields([
+	{ name: "file", maxCount: 1 },
+	{ name: "gallery", maxCount: 21 }
+]);
 
 exports.admin_sign_up = [
 	// Validate and sanitize fields.
@@ -630,7 +652,7 @@ exports.user_login = [
 ];
 
 exports.create_post = [
-	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
+	cpUpload, // image uploader always goes before any express validator
 	body("title")
 		.trim()
 		.isLength({ min: 10, max: 140 })
@@ -647,15 +669,15 @@ exports.create_post = [
 		.escape()
 		.withMessage("Post must have at least 10 characters and a maximum of 100000."),
 	check("file").custom((_, { req }) => {
-		if (!req.file) {
+		if (!req.files.file) {
 			// No file uploaded
 			return Promise.reject("Please select an image file");
 		}
 
 		const allowedMimeTypes = ["image/jpeg", "image/png"];
-		if (!allowedMimeTypes.includes(req.file.mimetype)) {
+		if (!allowedMimeTypes.includes(req.files.file[0].mimetype)) {
 			// clean trash first
-			updateFiles(undefined, req.file.filename);
+			updateFiles(undefined, req.files.file[0].filename);
 			return Promise.reject("Only JPEG and PNG images are allowed");
 		}
 
@@ -668,26 +690,28 @@ exports.create_post = [
 		let post = new Post({
 			title: req.body.title,
 			description: req.body.description,
-			post: req.body.post,
+			post: req.files.gallery
+				? postsUrlCorrector(req.body.post, req.files.gallery)
+				: req.body.post,
 			date: new Date(),
 			author: req.user.first_name + " " + req.user.last_name,
 			comments: [],
 			// multer files's info can be accessed through req.file not req.body.file
-			file: req.file
+			file: req.files.file[0]
 				? {
-						filename: req.file.filename,
-						originalname: req.file.originalname,
-						mimetype: req.file.mimetype,
-						path: req.file.path,
-						size: req.file.size
+						filename: req.files.file[0].filename,
+						originalname: req.files.file[0].originalname,
+						mimetype: req.files.file[0].mimetype,
+						path: req.files.file[0].path,
+						size: req.files.file[0].size
 				  }
 				: null
 		});
 
 		if (!errors.isEmpty()) {
 			// if file was uploaded, clean trash
-			if (req?.file?.filename) {
-				updateFiles(undefined, req.file.filename);
+			if (req?.files?.file[0]?.filename) {
+				updateFiles(undefined, req.files.file[0].filename);
 			}
 			// returns post object to correct mistakes in the front end
 			res.json({
@@ -827,7 +851,7 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 	// Update post date to a more understandable date
 	post = { ...post._doc, date: post.virtual_date };
 
-	if (post.comments.length) {
+	if (post.comments.length > 0) {
 		// If post contain any comments, update those comment's date
 		// to a more understandable date
 		post.comments.forEach((_, i) => {
@@ -852,22 +876,7 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 	}
 });
 
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, "public/uploads/");
-	},
-	filename: function (req, file, cb) {
-		const parts = file.originalname.split(".");
-		const ext = parts[parts.length - 1];
-		const fileName = parts[0];
-		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-		cb(null, `${fileName}-${uniqueSuffix}.${ext}`);
-	}
-});
-
-const blogUpload = multer({ storage: storage });
-
-exports.blog_picture_upload = [
+/* exports.blog_picture_upload = [
 	blogUpload.single("upload"),
 	asyncHandler(async (req, res, next) => {
 		res.status(200).json({
@@ -883,9 +892,9 @@ exports.blog_pictures_deletion = asyncHandler(async (req, res, next) => {
 	const trash = req.params.id;
 	updateFiles(undefined, trash);
 	res.status(200).json({
-		message: `deleted ${trash}`
+		message: `${trash}`
 	});
-});
+}); */
 
 async function postList() {
 	// Display a list of all posts
