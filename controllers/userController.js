@@ -17,7 +17,6 @@ const storage = multer.diskStorage({
 		cb(null, "public/uploads/");
 	},
 	filename: function (req, file, cb) {
-		console.log(file);
 		const fileName = file.originalname.split(".")[0];
 		const ext = file.mimetype.split("/")[1];
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -669,16 +668,16 @@ exports.create_post = [
 		.escape()
 		.withMessage("Post must have at least 10 characters and a maximum of 100000."),
 	check("file").custom((_, { req }) => {
-		if (!req.files.file) {
+		if (req.files.file === undefined) {
 			// No file uploaded
 			return Promise.reject("Please select an image file");
 		}
 
-		const allowedMimeTypes = ["image/jpeg", "image/png"];
+		const allowedMimeTypes = ["image/jpeg"];
 		if (!allowedMimeTypes.includes(req.files.file[0].mimetype)) {
 			// clean trash first
 			updateFiles(undefined, req.files.file[0].filename);
-			return Promise.reject("Only JPEG and PNG images are allowed");
+			return Promise.reject("Only JPEG images are allowed");
 		}
 
 		return true; // Validation successful
@@ -698,20 +697,13 @@ exports.create_post = [
 			author: req.user.first_name + " " + req.user.last_name,
 			comments: [],
 			// multer files's info can be accessed through req.file not req.body.file
-			file: req.files.file[0]
-				? {
-						filename: req.files.file[0].filename,
-						originalname: req.files.file[0].originalname,
-						mimetype: req.files.file[0].mimetype,
-						path: req.files.file[0].path,
-						size: req.files.file[0].size
-				  }
-				: null
+			file: req.files.file !== undefined ? req.files.file[0] : null,
+			gallery: req.files.gallery !== undefined ? req.files.gallery : []
 		});
 
 		if (!errors.isEmpty()) {
 			// if file was uploaded, clean trash
-			if (req?.files?.file[0]?.filename) {
+			if (req.files.file !== undefined) {
 				updateFiles(undefined, req.files.file[0].filename);
 			}
 			// returns post object to correct mistakes in the front end
@@ -843,6 +835,12 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
 	await Post.findByIdAndDelete(req.params.id);
 	// Delete post's image from the server if there's any
 	updateFiles(undefined, post.file.filename);
+	// Delete posts's gallery images from the server if there's any
+	if (post.gallery.length) {
+		for (const image of post.gallery) {
+			updateFiles(undefined, image.filename);
+		}
+	}
 	// return deleted file to the front end
 	res.json({ post });
 });

@@ -4,12 +4,14 @@ const { DateTime } = require("luxon");
 const Schema = mongoose.Schema;
 
 const File = new Schema({
-	_id: false,
-	filename: String,
-	originalname: String,
-	mimetype: String,
-	path: String,
-	size: Number
+	fieldname: { type: String },
+	originalname: { type: String },
+	encoding: { type: String },
+	mimetype: { type: String },
+	destination: { type: String },
+	filename: { type: String },
+	path: { type: String },
+	size: { type: Number }
 });
 
 const PostSchema = new Schema({
@@ -19,7 +21,8 @@ const PostSchema = new Schema({
 	date: { type: Date, required: true },
 	author: { type: String, required: true, minLength: 2 },
 	comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-	file: File
+	file: File,
+	gallery: [File]
 });
 
 function removeTimezone(dateString) {
