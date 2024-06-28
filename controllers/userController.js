@@ -4,30 +4,30 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // enables file uploading
 const upload = multer({ dest: "./public/uploads/" });
-const { updateFiles } = require("../utils/updateFiles");
+const { updateFiles } = require("../updateFiles");
 const { Admin } = require("../models/user");
 const { User } = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 const postsUrlCorrector = require("../utils/postsInspector");
 
-/* const storage = multer.diskStorage({
+const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		// The route to which files will be saved
 		cb(null, "public/uploads/");
 	},
 	filename: function (req, file, cb) {
-		const parts = file.originalname.split(".");
-		const ext = parts[parts.length - 1];
-		const fileName = parts[0];
+		console.log(file);
+		const fileName = file.originalname.split(".")[0];
+		const ext = file.mimetype.split("/")[1];
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 		cb(null, `${fileName}-${uniqueSuffix}.${ext}`);
 	}
 });
 
-const blogUpload = multer({ storage: storage }); */
+const blogUpload = multer({ storage: storage });
 
-const cpUpload = upload.fields([
+const cpUpload = blogUpload.fields([
 	{ name: "file", maxCount: 1 },
 	{ name: "gallery", maxCount: 21 }
 ]);
@@ -686,12 +686,13 @@ exports.create_post = [
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
+		const serverAddress = `${req.protocol}://${req.headers.host}/`;
 		// Create Posts object with escaped and trimmed data
 		let post = new Post({
 			title: req.body.title,
 			description: req.body.description,
 			post: req.files.gallery
-				? postsUrlCorrector(req.body.post, req.files.gallery)
+				? postsUrlCorrector(req.body.post, req.files.gallery, serverAddress)
 				: req.body.post,
 			date: new Date(),
 			author: req.user.first_name + " " + req.user.last_name,

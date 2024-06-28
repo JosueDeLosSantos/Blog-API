@@ -8,7 +8,7 @@ const { Admin } = require("./models/user");
 const { User } = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
-const { deleteAllFiles } = require("../utils/updateFiles");
+const { deleteAllFiles } = require("./updateFiles");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
@@ -26,7 +26,7 @@ async function main() {
 	console.log("Debug: About to connect");
 	await mongoose.connect(mongoDB);
 
-	await Admin.deleteMany({});
+	// await Admin.deleteMany({});
 	console.log("deleted all administrators");
 	await User.deleteMany({});
 	console.log("deleted all users");
