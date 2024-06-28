@@ -724,7 +724,7 @@ exports.create_post = [
 ];
 
 exports.update_post = [
-	upload.single("file"), // this middleware always goes before any express validator, if not it throws an error
+	cpUpload, // image uploader always goes before any express validator // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
 		.isLength({ min: 10, max: 140 })
@@ -742,15 +742,15 @@ exports.update_post = [
 		.withMessage("Post must have at least 10 characters and a maximum of 100000."),
 
 	check("file").custom((_, { req }) => {
-		if (req.file) {
-			const allowedMimeTypes = ["image/jpeg", "image/png"];
-			if (!allowedMimeTypes.includes(req.file.mimetype)) {
+		if (req.files.file !== undefined) {
+			const allowedMimeTypes = ["image/jpeg"];
+			if (!allowedMimeTypes.includes(req.files.file[0].mimetype)) {
 				// clean trash first
-				updateFiles(undefined, req.file.filename);
+				updateFiles(undefined, req.files.file[0].filename);
 				// set file to null to avoid req.body.trash to be deleted
 				// req.body.trash should only be deleted if a valid file is selected
-				req.file = null;
-				return Promise.reject("Only JPEG and PNG images are allowed");
+				req.files.file = undefined;
+				return Promise.reject("Only JPEG images are allowed");
 			}
 		}
 
@@ -759,13 +759,16 @@ exports.update_post = [
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
+		const serverAddress = `${req.protocol}://${req.headers.host}/`;
 
 		// Create Posts object with escaped and trimmed data
 		let post = new Post({
 			_id: req.params.id,
 			title: req.body.title,
 			description: req.body.description,
-			post: req.body.post,
+			post: req.files.gallery
+				? postsUrlCorrector(req.body.post, req.files.gallery, serverAddress)
+				: req.body.post,
 			date: new Date(),
 			author: req.user.first_name + " " + req.user.last_name,
 			comments: req.body.comments,
@@ -773,13 +776,17 @@ exports.update_post = [
 			// and the old one will be deleted from the server.
 			// if no file is selected it will return undefined
 			// which will make mongoose preserve the old value in the document.
-			file: req.file ? updateFiles(req.file, req.body.trash) : req.body.file
+			file:
+				req.files.file !== undefined
+					? updateFiles(req.files.file[0], req.body.trash)
+					: undefined, // undefined won't be saved in the database
+			gallery: req.files.gallery !== undefined ? req.files.gallery : []
 		});
 
 		if (!errors.isEmpty()) {
 			// if file was uploaded, clean trash
-			if (req?.file?.filename) {
-				updateFiles(undefined, req.file.filename);
+			if (req.files.file !== undefined) {
+				updateFiles(undefined, req.files.file[0].filename);
 			}
 			res.json({
 				post: post,
