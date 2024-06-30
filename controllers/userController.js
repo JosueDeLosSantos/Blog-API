@@ -10,6 +10,7 @@ const { User } = require("../models/user");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 const postsUrlCorrector = require("../utils/postsInspector");
+const galleryManager = require("../utils/galleryManager");
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -756,6 +757,7 @@ exports.update_post = [
 
 		return true; // Validation successful
 	}),
+	galleryManager,
 	asyncHandler(async (req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
@@ -780,7 +782,7 @@ exports.update_post = [
 				req.files.file !== undefined
 					? updateFiles(req.files.file[0], req.body.trash)
 					: undefined, // undefined won't be saved in the database
-			gallery: req.files.gallery !== undefined ? req.files.gallery : []
+			gallery: req.files.gallery
 		});
 
 		if (!errors.isEmpty()) {
