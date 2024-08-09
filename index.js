@@ -29,7 +29,10 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(
 	cors({
-		origin: ["blog-api-users-page.vercel.app", "blog-api-admin-page.vercel.app"],
+		origin: [
+			"https://blog-api-users-page.vercel.app/",
+			"https://blog-api-admin-page.vercel.app/"
+		],
 		credentials: true
 	})
 );
