@@ -655,7 +655,7 @@ exports.create_post = [
 	cpUpload, // image uploader always goes before any express validator
 	body("title")
 		.trim()
-		.isLength({ min: 10, max: 140 })
+		.isLength({ min: 10, max: 120 })
 		.escape()
 		.withMessage("Title must have at least 10 characters and a maximum of 140."),
 	body("description")
@@ -728,7 +728,7 @@ exports.update_post = [
 	cpUpload, // image uploader always goes before any express validator // this middleware always goes before any express validator, if not it throws an error
 	body("title")
 		.trim()
-		.isLength({ min: 10, max: 140 })
+		.isLength({ min: 10, max: 120 })
 		.escape()
 		.withMessage("Title must have at least 10 characters and a maximum of 140."),
 	body("description")
@@ -883,26 +883,6 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 		res.json({ post: post, user: req.user });
 	}
 });
-
-/* exports.blog_picture_upload = [
-	blogUpload.single("upload"),
-	asyncHandler(async (req, res, next) => {
-		res.status(200).json({
-			// http://localhost:3000/public/uploads/1a10411a500a4cf6dfa2cfcf974569f1
-			url: `http://localhost:3000/${req.file.path}`
-		});
-	})
-];
-
-exports.blog_pictures_deletion = asyncHandler(async (req, res, next) => {
-	// const url = req.body.url.split("/");
-	// const trash = url[url.length - 1];
-	const trash = req.params.id;
-	updateFiles(undefined, trash);
-	res.status(200).json({
-		message: `${trash}`
-	});
-}); */
 
 async function postList() {
 	// Display a list of all posts

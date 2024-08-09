@@ -26,7 +26,7 @@ async function main() {
 	console.log("Debug: About to connect");
 	await mongoose.connect(mongoDB);
 
-	// await Admin.deleteMany({});
+	await Admin.deleteMany({});
 	console.log("deleted all administrators");
 	await User.deleteMany({});
 	console.log("deleted all users");
