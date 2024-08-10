@@ -31,9 +31,9 @@ app.use(
 	cors({
 		origin: [
 			"https://blog-api-users-page.vercel.app",
-			"https://blog-api-admin-page.vercel.app"
-			/* "http://localhost:5173",
-			"http://localhost:5174" */
+			"https://blog-api-admin-page.vercel.app",
+			"http://localhost:5173",
+			"http://localhost:5174"
 		],
 		credentials: true
 	})
