@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/user");
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3000;
 /* mongodb connection string pattern:
  * DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.clyk6yk.mongodb.net/<databasename>?retryWrites=true&w=majority&appName=Cluster0"
  */

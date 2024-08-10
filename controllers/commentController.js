@@ -67,7 +67,7 @@ exports.add_comment = [
 	})
 ];
 // Delete specific comments
-exports.admin_delete_comment = asyncHandler(async (req, res, next) => {
+exports.delete_comment = asyncHandler(async (req, res, next) => {
 	// Find comment
 	const comment = await Comment.findById(req.params.id);
 	// Check if user is an admin
