@@ -8,8 +8,9 @@ const indexRouter = require("./routes/index");
 const userRouter = require("./routes/user");
 
 const port = process.env.PORT || 3000;
-/* mongodb connection string pattern:
+/* .env file should contain the following env variables:
  * DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.clyk6yk.mongodb.net/<databasename>?retryWrites=true&w=majority&appName=Cluster0"
+ * ACCESS_TOKEN_SECRET="<access_token_secret>"
  */
 const mongoDb = process.env.DATABASE_URL;
 
@@ -20,10 +21,6 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo conection error"));
 db.on("connected", console.log.bind(console, "connected to database"));
 
-// view engine setup
-// app.set("views", path.join(__dirname, "views"));
-// app.set("view engine", "ejs");
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -32,9 +29,7 @@ app.use(
 	cors({
 		origin: [
 			"https://blog-api-users-page.vercel.app",
-			"https://blog-api-admin-page.vercel.app",
-			"http://localhost:5173",
-			"http://localhost:5174"
+			"https://blog-api-admin-page.vercel.app"
 		],
 		credentials: true
 	})
