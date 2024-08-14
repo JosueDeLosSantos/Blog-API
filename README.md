@@ -3,6 +3,7 @@
 This is the API for the **JCODER** blog, created using Node.js, Express, and MongoDB. The API supports the content management system (CMS) of the blog, the admins website and the user's. It also includes image upload functionality using the Multer library, user authentication with JSON Web Tokens (jsonwebtoken), and password encryption with bcryptjs.
 
 [Admin's Website](https://blog-api-admin-page.vercel.app/)
+<br/>
 [User's Website](https://blog-api-users-page.vercel.app/)
 
 ## Table of Contents
