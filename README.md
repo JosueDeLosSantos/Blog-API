@@ -27,6 +27,17 @@ This is the API for the **JCODER** blog, created using Node.js, Express, and Mon
     npm install
     ```
 
+## Create .env file and add the following variables:
+
+1. Mongodb connection string:
+    ```bash
+    DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.clyk6yk.mongodb.net/<databasename>?retryWrites=true&w=majority&appName=Cluster0"
+    ```
+2. Access token:
+    ```bash
+    ACCESS_TOKEN_SECRET="<access_token_secret>"
+    ```
+
 ## Usage
 
 1. Start the server:
