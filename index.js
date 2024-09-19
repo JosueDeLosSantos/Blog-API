@@ -42,6 +42,8 @@ app.use("/user", userRouter);
 // adding 'public' in the virtual path is not a requirement
 app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploads")));
 
+app.timeout = 120000;
+
 app.listen(port, "0.0.0.0", () => {
 	console.log(`Listening on port: ${port}`);
 });
