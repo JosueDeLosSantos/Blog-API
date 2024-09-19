@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/user");
 
-const port = process.env.PORT || 1000;
+const port = process.env.PORT || 3000;
 /* .env file should contain the following env variables:
  * DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.clyk6yk.mongodb.net/<databasename>?retryWrites=true&w=majority&appName=Cluster0"
  * ACCESS_TOKEN_SECRET="<access_token_secret>"
@@ -41,8 +41,6 @@ app.use("/user", userRouter);
 // Serve static files from the "public" directory
 // adding 'public' in the virtual path is not a requirement
 app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploads")));
-
-app.timeout = 120000;
 
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);
