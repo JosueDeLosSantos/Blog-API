@@ -137,10 +137,6 @@ The API uses the Multer library for handling image uploads. Images can be upload
 
 The API uses JSON Web Tokens (jsonwebtoken) for user authentication and bcryptjs for password encryption to ensure secure access and data protection.
 
-## Deployment
-
-This API is part of my first fullstack project and has been deployed on a Platform as a Service (PaaS). Through this process, I learned many important aspects of deploying applications on PaaS.
-
 ## Learnings
 
 Building this fullstack project has been a significant learning experience. Some of the key aspects I learned include:
