@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const timeout = require("connect-timeout");
 const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(
 	cors({
 		// http://localhost:5173
+		// https://blog-api-users-page.vercel.app
 		origin: ["https://blog-api-users-page.vercel.app"],
 		credentials: true
 	})
@@ -40,9 +42,16 @@ app.use("/user", userRouter);
 // adding 'public' in the virtual path is not a requirement
 app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploads")));
 
+// Set the timeout to 2 minutes
+app.use(timeout("4m"));
+
+// Middleware to handle timeout
+const haltOnTimedout = (req, res, next) => {
+	if (!req.timedout) next();
+};
+
+app.use(haltOnTimedout);
+
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);
 });
-
-// Set the timeout to 4 minutes
-server.timeout = 240000;
