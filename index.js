@@ -43,3 +43,6 @@ app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploa
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);
 });
+
+// Set the timeout to 4 minutes
+server.timeout = 240000;
