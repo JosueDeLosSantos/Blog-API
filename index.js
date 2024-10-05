@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(
 	cors({
 		// http://localhost:5173
-		origin: ["https://blog-api-users-page.vercel.app/"],
+		origin: ["https://blog-api-users-page.vercel.app"],
 		credentials: true
 	})
 );
