@@ -22,7 +22,7 @@ main().catch((err) => console.log(err));
  *
  * @return {Promise<void>} Promise that resolves when the function completes successfully.
  */
-/* async function main() {
+async function main() {
 	console.log("Debug: About to connect");
 	await mongoose.connect(mongoDB);
 
@@ -39,4 +39,4 @@ main().catch((err) => console.log(err));
 	console.log("deleted all files");
 	console.log("closing connection");
 	await mongoose.connection.close();
-} */
+}

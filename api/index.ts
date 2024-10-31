@@ -4,8 +4,8 @@ const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const indexRouter = require("./routes/index");
-const userRouter = require("./routes/user");
+const indexRouter = require("../routes/index");
+const userRouter = require("../routes/user");
 
 const port = process.env.PORT || 3000;
 /* .env file should contain the following env variables:
@@ -30,7 +30,8 @@ app.use(
 		// http://localhost:5173
 		origin: [
 			"https://blog-api-users-page.vercel.app",
-			"https://blog-api-admin-page.vercel.app"
+			"https://blog-api-admin-page.vercel.app",
+			"http://localhost:5173"
 		],
 		credentials: true
 	})
