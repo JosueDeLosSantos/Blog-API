@@ -1,13 +1,13 @@
-require("dotenv").config();
+process.loadEnvFile();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const indexRouter = require("./routes/index");
-const userRouter = require("./routes/user");
+const indexRouter = require("../routes/index");
+const userRouter = require("../routes/user");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 /* .env file should contain the following env variables:
  * DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.clyk6yk.mongodb.net/<databasename>?retryWrites=true&w=majority&appName=Cluster0"
  * ACCESS_TOKEN_SECRET="<access_token_secret>"
@@ -24,13 +24,15 @@ db.on("connected", console.log.bind(console, "connected to database"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
+app.use(cors());
+
+/* app.use(
 	cors({
 		// http://localhost:5173
 		origin: ["http://localhost:5173"],
 		credentials: true
 	})
-);
+); */
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+process.loadEnvFile();
 
 /**
  * Authenticates the token provided in the request headers.
