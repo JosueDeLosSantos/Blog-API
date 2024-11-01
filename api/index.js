@@ -44,3 +44,5 @@ app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploa
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);
 });
+
+module.exports = app;
