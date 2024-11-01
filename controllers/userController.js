@@ -813,17 +813,9 @@ exports.posts_list = asyncHandler(async (req, res, next) => {
 	const posts = await postList();
 
 	if (posts.length) {
-		if (req.statusCode) {
-			res.status(req.statusCode).json({ posts });
-		} else {
-			res.json({ posts: posts, user: req.user });
-		}
+		res.json({ posts: posts });
 	} else {
-		if (req.statusCode) {
-			res.status(req.statusCode).json({ message: "no posts" });
-		} else {
-			res.json({ message: "no posts" });
-		}
+		res.json({ message: "no posts" });
 	}
 });
 
@@ -878,10 +870,10 @@ exports.get_post = asyncHandler(async (req, res, next) => {
 		return next(err);
 	}
 
-	if (req.statusCode) {
-		res.status(req.statusCode).json({ post });
-	} else {
+	if (req.user) {
 		res.json({ post: post, user: req.user });
+	} else {
+		res.json({ post: post });
 	}
 });
 
