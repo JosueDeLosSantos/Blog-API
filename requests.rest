@@ -3,3 +3,9 @@ GET http://localhost:3001/
 ###
 
 GET http://localhost:3001/visitor/post/6724c23613b7154318985d10
+
+###
+
+GET https://blog-o0ke822ac-josues-projects-1142327c.vercel.app/
+
+

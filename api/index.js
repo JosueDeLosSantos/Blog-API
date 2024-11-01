@@ -24,22 +24,22 @@ db.on("connected", console.log.bind(console, "connected to database"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// app.use(cors());
+app.use(cors());
+// http://localhost:5173
 
-app.use(
+/* app.use(
 	cors({
-		// http://localhost:5173
-		origin: ["https://blog-api-admin-page.vercel.app"],
+		origin: ["https://blog-api-admin-page.vercel.app", "http://localhost:5173"],
 		credentials: true
 	})
-);
+); */
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
 
 // Serve static files from the "public" directory
 // adding 'public' in the virtual path is not a requirement
-app.use("/public/uploads/", express.static(path.join(__dirname, "public", "uploads")));
+app.use("/public/uploads/", express.static(path.join(__dirname, "../public", "uploads")));
 
 app.listen(port, () => {
 	console.log(`Listening on port: ${port}`);
