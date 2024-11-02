@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-process.loadEnvFile();
+require("dotenv").config();
 const { body, check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

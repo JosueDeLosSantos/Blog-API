@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-process.loadEnvFile();
+require("dotenv").config();
 
 console.log("This script clears all users, all posts, and all comments");
 
